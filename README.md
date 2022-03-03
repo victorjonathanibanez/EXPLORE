@@ -11,7 +11,7 @@ Object recognition tests are among the most widely used behavioral tests in neur
 - Pull this repository and store the folder at a preferred directory
 - Open a shell- or a terminal window and change the directory (the easiest way is to drag & drop your folder into the shell- or terminal window after typing <cd> and a space):
 ```sh
-cd <your directory>/EXPLORE
+cd <your directory>/EXPLORE-main
 ```
 - create and activate your environment:
 ```sh
@@ -44,7 +44,7 @@ With the quadrant analysis you can investigate and quantify movement throughout 
 
 Open a shell- or a terminal window and change the directory to your folder:
 ```sh
-cd <your directory>/EXPLORE/scripts
+cd <your directory>/EXPLORE-main/scripts
 ```
 
 Activate your virtual environment:
@@ -77,7 +77,7 @@ EXPLOREs deep learning-based exploration analysis is the major part to investiga
 
 Open a shell- or a terminal window and change the directory to your folder:
 ```sh
-cd <your directory>/EXPLORE/scripts
+cd <your directory>/EXPLORE-main/scripts
 ```
 
 Activate your virtual environment:
@@ -138,7 +138,7 @@ Besides the automated analysis, EXPLORE provides a tool for manual scoring. The 
 
 Open a shell- or a terminal window and change the directory to your folder:
 ```sh
-cd <your directory>/EXPLORE/scripts
+cd <your directory>/EXPLORE-main/scripts
 ```
 
 Activate your virtual environment:
