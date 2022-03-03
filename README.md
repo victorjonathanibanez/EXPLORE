@@ -7,7 +7,7 @@ Object recognition tests are among the most widely used behavioral tests in neur
 
 ## _Install EXPLORE:_
 
-- First install Anaconda (if not installed already): [Install Anaconda](https://docs.anaconda.com/anaconda/install/index.html)
+- First install Anaconda (if not installed already): [Install now](https://docs.anaconda.com/anaconda/install/index.html)
 - Clone this repository and store the folder *EXPLORE-main* at a preferred directory (first, you find it in your *download* folder)
 - Open a shell- or a terminal window and change the directory (the easiest way is to drag & drop your folder into the shell- or terminal window after typing *cd* and a space):
 ```sh
