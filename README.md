@@ -61,7 +61,7 @@ python main_quadrant.py
 ```
 (**python3** for macOS)
 
-**⮕ This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg for further instructions!)** 
   
 \
 &nbsp;
@@ -96,7 +96,7 @@ python main_training.py
 ```
 (**python3** for mac)
 
-**⮕ This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg for further instructions!)** 
   
 \
 &nbsp;
@@ -109,7 +109,7 @@ python main_prediction.py
 ```
 (**python3** for mac)
   
-**⮕ This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg for further instructions!)** 
 
 \
 &nbsp;
@@ -122,7 +122,7 @@ python main_correct.py
 ```
 (**python3** for mac)
 
-**⮕ This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg for further instructions!)** 
 
 \
 &nbsp;
@@ -155,7 +155,7 @@ python main_manual_scoring.py
 ```
 (**python3** for mac)
 
-**⮕ This will now open a GUI (refer to the training manual for further instructions!)** 
+**:arrow_right: This will now open a GUI (refer to the training manual for further instructions!)** 
   
 \
 &nbsp;
