@@ -118,7 +118,7 @@ python main_prediction.py
   
 To correct your prediction enter the following command:
 ```sh
-python main_correction.py
+python main_correct.py
 ```
 (**python3** for mac)
 
