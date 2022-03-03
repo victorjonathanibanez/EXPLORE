@@ -58,7 +58,7 @@ python main_quadrant.py
 ```
 (**python3** for macOS)
 
-**? This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual for further instructions!)** 
   
 \
 &nbsp;
@@ -93,7 +93,7 @@ python main_training.py
 ```
 (**python3** for mac)
 
-**? This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual for further instructions!)** 
   
 \
 &nbsp;
@@ -106,7 +106,7 @@ python main_prediction.py
 ```
 (**python3** for mac)
   
-**? This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual for further instructions!)** 
 
 \
 &nbsp;
@@ -119,7 +119,7 @@ python main_correction.py
 ```
 (**python3** for mac)
 
-**? This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual for further instructions!)** 
 
 \
 &nbsp;
