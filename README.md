@@ -162,6 +162,9 @@ python main_manual_scoring.py
 
 > **Please refer to our publication for further information about more technical details:**
 
+\
+&nbsp;
+
 ## _Contact:_
 victor.ibanez@uzh.ch\
 wahl@hifo.uzh.ch
