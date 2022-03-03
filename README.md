@@ -58,7 +58,7 @@ python main_quadrant.py
 ```
 (**python3** for macOS)
 
-**⮕ This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg and for further instructions!)** 
   
 \
 &nbsp;
