@@ -5,7 +5,7 @@ GIFs will come here!
 ## :mortar_board: _About:_
 Object recognition tests are among the most widely used behavioral tests in neuroscience to assess memory function in rodents. Despite the simplicity of the experimental implementation of the task, there is a broad range of interpretation which behavioral features are counted as object exploration. Thus, traditionally the analysis of object exploration is often scored manually, which is  time-consuming, limited to few behaviors, and variable across researchers. We developed EXLORE: a simple, ready-to use, open source pipeline to perform the different analysis steps for object recognition tests with a higher versatility and precision and lower investment of time than expensive commercial software. EXPLORE consists of two parts: 1) An algorithm that calculates mean pixel intensities of the four quadrants of the experimental arena, useful for preliminary tests detecting patterns of roaming behavior with spatial preference. 2) A convolutional neural network trained in a supervised manner, that extracts features from images and classifies features into ?exploration? at a given object or ?no exploration? elsewhere. EXPLORE achieves human accuracy in identifying and scoring exploration behavior and outperforms commercial software, in particular under complex conditions (e.g. multiple objects and larger objects to climb on). Users can decide by themselves, which behavior is in- or excluded from scoring exploration behavior by labeling the respective training data set. A GUI provides a beginning-to-end analysis with an automatic stop-watch function for exploration behavior and calculation of typical outcome parameters, accelerating a fast and reproducible data analysis for neuroscientists with no expertise in programming or deep learning.
 
-## _Install EXPLORE:_
+## :hammer: _Install EXPLORE:_
 
 - First install Anaconda (if not installed already): [Install now](https://docs.anaconda.com/anaconda/install/index.html)
 - Clone this repository and store the folder *EXPLORE-main* at a preferred directory (first, you find it in your *download* folder)
@@ -42,7 +42,7 @@ conda install -c conda-forge opencv==4.5.0
 \
 &nbsp;
 
-## _How to use EXPLOREs quadrant analysis:_
+## :bulb: _How to use EXPLOREs quadrant analysis:_
 With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
 
 Open a shell- or a terminal window and change to your directory:
@@ -78,7 +78,7 @@ python main_quadrant.py
 \
 &nbsp;
   
-## _How to use EXPLOREs deep learning-based exploration analysis:_
+## :bulb: _How to use EXPLOREs deep learning-based exploration analysis:_
 EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on the all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. For acquisition session and testing session two distinct networks have to be trained.
 
 Open a shell- or a terminal window and change to your directory:
@@ -148,7 +148,7 @@ python main_correct.py
 \
 &nbsp;
 
-## _How to use EXPLOREs manual labeling tool:_
+## :bulb: _How to use EXPLOREs manual labeling tool:_
 Besides the automated analysis, EXPLORE provides a tool for manual scoring. The scoring will be saved as .csv file.
 
 Open a shell- or a terminal window and change to your directory:
@@ -180,6 +180,6 @@ python main_manual_scoring.py
 \
 &nbsp;
 
-## _Contact:_
+## :mailbox: _Contact:_
 victor.ibanez@uzh.ch\
 wahl@hifo.uzh.ch
