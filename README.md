@@ -141,7 +141,7 @@ python main_correct.py
 
 | Output files | Type | Description | 
 | ------ | ------ | ------ |
-| Prediction videos | folder | For all of the selected experiment videos EXPLORE will generate colored squares around the objects whenever *exploration* was predicted and store the newly created videos in the folder |
+| Prediction videos | folder | For all of the selected experiment videos EXPLORE will generate colored squares around the objects whenever *exploration* was predicted and stores the newly created videos in a folder *prediction videos*|
 | Dataframe | .csv | The predicted exploration times and frequencies at each object will be stored in a dataframe |
 | Plots | .png | Training- and validation accuracy- and loss will be plotted and saved |
   
