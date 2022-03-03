@@ -175,7 +175,7 @@ python main_manual_scoring.py
 \
 &nbsp;
 
-> **Please refer to our publication for further information about more technical details:**
+:exclamation: **Please refer to our publication for further information about more technical details: currently under review!**
 
 \
 &nbsp;
