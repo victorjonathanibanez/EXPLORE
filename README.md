@@ -59,6 +59,8 @@ python main_quadrant.py
 (**python3** for macOS)
 
 **? This will now open a GUI (see manual for further instructions!)** 
+  
+\
 &nbsp;
 
 | Output files | Type | Description | 
@@ -87,6 +89,8 @@ python main_training.py
 (*python3* for mac)
 
 **? This will now open a GUI (see manual for further instructions!)** 
+  
+\
 &nbsp;
 
 To predict on your experiment videos enter the following command:
@@ -102,6 +106,8 @@ python main_correction.py
 (**python3** for mac)
 
 **? This will now open a GUI (see manual for further instructions!)** 
+
+\
 &nbsp;
 
 | Output files | Type | Description | 
@@ -131,10 +137,12 @@ python main_manual_scoring.py
 (**python3** for mac)
 
 **? This will now open a GUI (see manual for further instructions!)** 
+  
+\
 &nbsp;
 
 > **Please refer to our publication for further information about more technical details:**
 
 ## _Contact:_
-victor.ibanez@uzh.ch
+victor.ibanez@uzh.ch\
 wahl@hifo.uzh.ch
