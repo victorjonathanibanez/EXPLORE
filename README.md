@@ -37,7 +37,7 @@ conda install -c conda-forge opencv==4.5.0
 \
 &nbsp;
 
-> **Congratulations, you have now successfully installed EXPLORE! Now let's use it...**
+:fire: **Congratulations, you have now successfully installed EXPLORE! Now let's use it...** :fire:
   
 \
 &nbsp;
