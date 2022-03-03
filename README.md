@@ -152,7 +152,7 @@ python main_manual_scoring.py
 ```
 (**python3** for mac)
 
-**? This will now open a GUI (see manual for further instructions!)** 
+**⮕ This will now open a GUI (see manual for further instructions!)** 
   
 \
 &nbsp;
