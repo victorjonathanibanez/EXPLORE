@@ -63,7 +63,7 @@ python main_quadrant.py
 
 **:arrow_right: This will now open a GUI (see manual [manual quadrant] (https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg) for further instructions!)** 
 
-[manual quadrant] (https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg)
+[I'm an inline-style link](https://www.google.com)
 
 \
 &nbsp;
