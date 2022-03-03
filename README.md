@@ -97,7 +97,7 @@ To train a network enter the following command:
 ```sh
 python main_training.py
 ```
-(**python3** for mac)
+(**python3** for macOS)
 
 \
 &nbsp;
@@ -113,7 +113,7 @@ To predict on your experiment videos enter the following command:
 ```sh
 python main_prediction.py
 ```
-(**python3** for mac)
+(**python3** for macOS)
 
 \
 &nbsp;
@@ -129,7 +129,7 @@ To correct your prediction enter the following command:
 ```sh
 python main_correct.py
 ```
-(**python3** for mac)
+(**python3** for macOS)
 
 \
 &nbsp;
@@ -165,7 +165,7 @@ To start manual scoring type the following command:
 ```sh
 python main_manual_scoring.py
 ```
-(**python3** for mac)
+(**python3** for macOS)
 
 \
 &nbsp;
