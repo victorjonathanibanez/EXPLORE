@@ -61,6 +61,9 @@ python main_quadrant.py
 ```
 (**python3** for macOS)
 
+\
+&nbsp;
+
 **:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg) for further instructions!)** 
 
 \
@@ -96,6 +99,9 @@ python main_training.py
 ```
 (**python3** for mac)
 
+\
+&nbsp;
+
 **:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg) for further instructions!)** 
   
 \
@@ -108,7 +114,10 @@ To predict on your experiment videos enter the following command:
 python main_prediction.py
 ```
 (**python3** for mac)
-  
+
+\
+&nbsp;
+
 **:arrow_right: This will now open a GUI (see [manual prediction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg) for further instructions!)** 
 
 \
@@ -121,6 +130,9 @@ To correct your prediction enter the following command:
 python main_correct.py
 ```
 (**python3** for mac)
+
+\
+&nbsp;
 
 **:arrow_right: This will now open a GUI (see [manual correction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg) for further instructions!)** 
 
@@ -154,6 +166,9 @@ To start manual scoring type the following command:
 python main_manual_scoring.py
 ```
 (**python3** for mac)
+
+\
+&nbsp;
 
 **:arrow_right: This will now open a GUI (refer to the training manual for further instructions!)** 
   
