@@ -105,6 +105,8 @@ To predict on your experiment videos enter the following command:
 python main_prediction.py
 ```
 (**python3** for mac)
+  
+**? This will now open a GUI (see manual for further instructions!)** 
 
 \
 &nbsp;
