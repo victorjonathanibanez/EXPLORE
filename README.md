@@ -34,6 +34,9 @@ pip install opencv-python==4.1.1.26
 conda install -c conda-forge opencv==4.5.0
 ```
 
+\
+&nbsp;
+
 > **Congratulations, you have now successfully installed EXPLORE! Now let's use it...**
   
 \
