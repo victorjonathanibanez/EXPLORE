@@ -64,7 +64,7 @@ python main_quadrant.py
 \
 &nbsp;
 
-**:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg) for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpg) for further instructions!)** 
 
 \
 &nbsp;
@@ -102,7 +102,7 @@ python main_training.py
 \
 &nbsp;
 
-**:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg) for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpg) for further instructions!)** 
   
 \
 &nbsp;
@@ -118,7 +118,7 @@ python main_prediction.py
 \
 &nbsp;
 
-**:arrow_right: This will now open a GUI (see [manual prediction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg) for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual prediction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpg) for further instructions!)** 
 
 \
 &nbsp;
@@ -134,7 +134,7 @@ python main_correct.py
 \
 &nbsp;
 
-**:arrow_right: This will now open a GUI (see [manual correction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg) for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual correction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpg) for further instructions!)** 
 
 \
 &nbsp;
