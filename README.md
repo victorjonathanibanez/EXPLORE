@@ -8,7 +8,7 @@ Object recognition tests are among the most widely used behavioral tests in neur
 ## _Install EXPLORE:_
 
 - First install Anaconda (if not installed already): https://docs.anaconda.com/anaconda/install/index.html
-- Pull this repository and store the folder *EXPLORE-main* at a preferred directory (first, you find it in your *download* folder)
+- Clone this repository and store the folder *EXPLORE-main* at a preferred directory (first, you find it in your *download* folder)
 - Open a shell- or a terminal window and change the directory (the easiest way is to drag & drop your folder into the shell- or terminal window after typing *cd* and a space):
 ```sh
 cd <your directory>/EXPLORE-main
@@ -45,7 +45,7 @@ conda install -c conda-forge opencv==4.5.0
 ## _How to use EXPLOREs quadrant analysis:_
 With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
 
-Open a shell- or a terminal window and change the directory to your folder:
+Open a shell- or a terminal window and change to your directory:
 ```sh
 cd <your directory>/EXPLORE-main/scripts
 ```
@@ -61,9 +61,7 @@ python main_quadrant.py
 ```
 (**python3** for macOS)
 
-**:arrow_right: This will now open a GUI (see manual [manual quadrant] (https://www.github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg) for further instructions!)** 
-
-[I'm an inline-style link](https://www.google.com)
+**:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpeg) for further instructions!)** 
 
 \
 &nbsp;
@@ -80,7 +78,7 @@ python main_quadrant.py
 ## _How to use EXPLOREs deep learning-based exploration analysis:_
 EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on the all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. For acquisition session and testing session two distinct networks have to be trained.
 
-Open a shell- or a terminal window and change the directory to your folder:
+Open a shell- or a terminal window and change to your directory:
 ```sh
 cd <your directory>/EXPLORE-main/scripts
 ```
@@ -98,7 +96,7 @@ python main_training.py
 ```
 (**python3** for mac)
 
-**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg and https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpeg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpeg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpeg) for further instructions!)** 
   
 \
 &nbsp;
@@ -111,7 +109,7 @@ python main_prediction.py
 ```
 (**python3** for mac)
   
-**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual prediction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_prediction.jpeg) for further instructions!)** 
 
 \
 &nbsp;
@@ -124,7 +122,7 @@ python main_correct.py
 ```
 (**python3** for mac)
 
-**:arrow_right: This will now open a GUI (see manual https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual correction](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_correction.jpeg) for further instructions!)** 
 
 \
 &nbsp;
@@ -141,7 +139,7 @@ python main_correct.py
 ## _How to use EXPLOREs manual labeling tool:_
 Besides the automated analysis, EXPLORE provides a tool for manual scoring. The scoring will be saved as .csv file.
 
-Open a shell- or a terminal window and change the directory to your folder:
+Open a shell- or a terminal window and change to your directory:
 ```sh
 cd <your directory>/EXPLORE-main/scripts
 ```
