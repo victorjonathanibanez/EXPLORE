@@ -69,6 +69,9 @@ python main_quadrant.py
 | Plots | .png | For each animal (video) the frequency will be plotted and stored |
 | Heatmap | .png | An overview on the quadrants exploration- frequency and time will be plotted as heatmaps |
 
+\
+&nbsp;
+  
 ## _How to use EXPLOREs deep learning-based exploration analysis:_
 EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on the all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. For acquisition session and testing session two distinct networks have to be trained.
 
@@ -82,23 +85,32 @@ Activate your virtual environment:
 conda activate XPL
 ```
 
+### Training:
+  
 To train a network enter the following command:
 ```sh
 python main_training.py
 ```
-(*python3* for mac)
+(**python3** for mac)
 
 **? This will now open a GUI (see manual for further instructions!)** 
   
 \
 &nbsp;
 
+### Prediction:
+  
 To predict on your experiment videos enter the following command:
 ```sh
 python main_prediction.py
 ```
-(*python3* for mac)
+(**python3** for mac)
 
+\
+&nbsp;
+
+### Correction:
+  
 To correct your prediction enter the following command:
 ```sh
 python main_correction.py
@@ -115,7 +127,9 @@ python main_correction.py
 | Prediction videos | folder | For all of the selected experiment videos EXPLORE will generate colored squares around the objects whenever *exploration* was predicted and store the newly created videos in the folder |
 | Dataframe | .csv | The predicted exploration times and frequencies at each object will be stored in a dataframe |
 | Plots | .png | Training- and validation accuracy- and loss will be plotted and saved |
-
+  
+\
+&nbsp;
 
 ## _How to use EXPLOREs manual labeling tool:_
 Besides the automated analysis, EXPLORE provides a tool for manual scoring. The scoring will be saved as .csv file.
