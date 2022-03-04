@@ -49,6 +49,9 @@ With the quadrant analysis you can investigate and quantify movement throughout 
 ### Overview on method:
 ![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/quadrant.jpg)
 
+\
+&nbsp;
+
 Open a shell- or a terminal window and change to your directory:
 ```sh
 cd <your directory>/EXPLORE-main/scripts
@@ -88,6 +91,9 @@ EXPLOREs deep learning-based exploration analysis is the major part to investiga
 
 ### Overview on method:
 ![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/deeplearning.jpg)
+
+\
+&nbsp;
 
 Open a shell- or a terminal window and change to your directory:
 ```sh
