@@ -43,6 +43,7 @@ conda install -c conda-forge opencv==4.5.0
 &nbsp;
 
 ## :bulb: _How to use EXPLOREs quadrant analysis:_
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/quadrant.jpg)
 With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
 
 Open a shell- or a terminal window and change to your directory:
