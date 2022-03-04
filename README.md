@@ -43,8 +43,11 @@ conda install -c conda-forge opencv==4.5.0
 &nbsp;
 
 ## :bulb: _How to use EXPLOREs quadrant analysis:_
-![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/quadrant.jpg)
+
 With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
+
+### Overview on method:
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/quadrant.jpg)
 
 Open a shell- or a terminal window and change to your directory:
 ```sh
@@ -80,8 +83,11 @@ python main_quadrant.py
 &nbsp;
   
 ## :bulb: _How to use EXPLOREs deep learning-based exploration analysis:_
-![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/deeplearning.jpg)
+
 EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on the all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. For acquisition session and testing session two distinct networks have to be trained.
+
+### Overview on method:
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/deeplearning.jpg)
 
 Open a shell- or a terminal window and change to your directory:
 ```sh
