@@ -87,7 +87,8 @@ python main_quadrant.py
   
 ## :bulb: _How to use EXPLOREs deep learning-based exploration analysis:_
 
-EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on the all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. For acquisition session and testing session two distinct networks have to be trained.
+EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. 
+:exclamation:Note: For acquisition session and testing session two distinct networks have to be trained.
 
 ### Overview on method:
 ![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/deeplearning.jpg)
