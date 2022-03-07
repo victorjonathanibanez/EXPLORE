@@ -18,7 +18,7 @@ cd <your directory>/EXPLORE-main
 conda create -n XPL
 conda activate XPL
 ```
-- Run the *requirements.txt* file (this will install all the necessary packages for EXPLORE into your new conda environment):
+- Run the *requirements.txt* file (this will install all the necessary packages for EXPLORE into your new conda environment (could take a few minutes!)):
 ```sh
 conda install -c conda-forge --file requirements.txt
 ```
