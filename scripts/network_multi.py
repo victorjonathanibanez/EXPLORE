@@ -242,10 +242,3 @@ def network_multi(source_dir, target_dir, project_path, project_name, plot_path)
     #plt.show()
     plt.savefig(os.path.join(plot_path, 'loss.png'))
     plt.close()
-
-#source_dir = r'C:\Users\vibane\Desktop\Victor\NOR_analysis\B4_OLT_testing_210721\labeled'
-#target_dir = r'C:\Users\vibane\Desktop\Victor\NOR_analysis\B4_OLT_testing_210721\training'
-#project_path = r'C:\Users\vibane\Desktop\Victor\NOR_analysis'
-#project_name = r'B4_OLT_testing_210721'
-#plot_path = r'C:\Users\vibane\Desktop\Victor\NOR_analysis\B4_OLT_testing_210721\plots'
-#network_multi(source_dir,target_dir,project_path,project_name,plot_path)
