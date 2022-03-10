@@ -117,7 +117,7 @@ python main_training.py
 \
 &nbsp;
 
-**:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training.jpg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpg) for further instructions!)** 
+**:arrow_right: This will now open a GUI (see [manual training1](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training1.jpg) and [manual training2](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_training2.jpg) and [manual scoring](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_scoring.jpg) for further instructions!)** 
   
 \
 &nbsp;
