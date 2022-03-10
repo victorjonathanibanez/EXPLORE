@@ -213,11 +213,11 @@ def quadrant_analysis(project_path, project_name, videos, time, background, ref_
         df.to_csv(filename, index=False)
 
     df1 = pd.DataFrame.from_dict(data)
-    df2 = pd.DataFrame.from_dict(data_HM)
+    #df2 = pd.DataFrame.from_dict(data_HM)
     name1 = 'Quadrant_analysis_'
-    name2 = 'HM_Quadrant_analysis_'
+    #name2 = 'HM_Quadrant_analysis_'
     write(df1,name1)
-    write(df2,name2)
+    #write(df2,name2)
 
     if len(videos) > 1: # plot == 1 and
         def heatmap(df, type, type2, name_HM):
