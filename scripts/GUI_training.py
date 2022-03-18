@@ -19,11 +19,12 @@ import os
 # -----------------------------------------------------
 
 def GUI_training():	
-
+	
+	# function to get entry values
 	def get_values():
 		return [entry.get() for entry in entries]
 
-
+	# display option 1 if radiobutton is 'yes'
 	def handle_option_1():
 		global options_label1, options_label2, options_label3, options_button1, options_button2, options_entry1
 
@@ -45,7 +46,8 @@ def GUI_training():
 			options_button2.place_forget()
 		except:
 			pass
-
+	
+	# display option 1 if radiobutton is 'no'
 	def handle_option_2():
 		global options_label1, options_label2, options_label3, options_button1, options_button2, options_entry1
 
@@ -63,23 +65,28 @@ def GUI_training():
 			options_entry1.place_forget()
 		except:
 			pass
-
+	
+	# create main interface
 	def call_dic(dic):
-
+		
+		# grab dictionary structure 
 		for key, value in dic.items():
 			
 			for i in range(len(value)):
-
+				
+				# create labels
 				if value[i][0] == 'Label':
 					lbl=Label(window, text=value[i][1][1])
 					lbl.place(x=int(win_w*value[i][1][0]), y=int(win_h*key))
 					lbl.config(font=("TkDefaultFont", f_size, "italic"))
-
+				
+				# create entries
 				if value[i][0] == 'Entry':
 					txtfld=Entry(window, bd=2, width=value[i][1][1])
 					txtfld.place(x=int(win_w*value[i][1][0]), y=int(win_h*key))
 					entries.append(txtfld)
-
+				
+				# create buttons
 				if value[i][0] == 'Button':
 					if value[i][1][1] == 'path':
 						btn=Button(window, text="search", command=open_path)
@@ -90,7 +97,8 @@ def GUI_training():
 
 					btn.place(x=int(win_w*value[i][1][0]), y=int(win_h*key))
 					btn.config(font=("TkDefaultFont", f_size, "italic"))
-
+				
+				# create radiobuttons
 				if value[i][0] == 'Radiobutton':
 					global var
 
@@ -101,7 +109,8 @@ def GUI_training():
 					R2 = Radiobutton(window, text=value[i][1][3], variable=var, value=2,command=handle_option_2)
 					R2.place(x=int(win_w*value[i][1][2]), y=int(win_h*key))
 					R2.config(font=("TkDefaultFont", f_size, "italic"))
-
+	
+	# function to get project path
 	def open_path():
 		global project_path
 
@@ -110,16 +119,19 @@ def GUI_training():
 		lbl1=Label(window, text=project_path.ljust(1000))
 		lbl1.place(x=int(win_w*0.05), y=int(win_h*0.26))
 		lbl1.config(font=("Arial", f_size-2))
-
+	
+	# function to get video paths
 	def open_vid():
 		global videos
 
 		videos = fd.askopenfilenames()
-
+		
+		# take first video and get basename, then calculate the nb. of video name strings fits into one horizontal line of the GUI
 		name0 = os.path.basename(videos[0]).split('.')[0]
 		l = len(name0)
 		nb_items = int((win_w/(l+2))/(f_size/1.5))
-
+		
+		# add label below button in several rows if necessary
 		for i in range(len(videos)):
 			name = os.path.basename(videos[i]).split('.')[0]
 
@@ -135,7 +147,7 @@ def GUI_training():
 				lbl4.place(x=int(win_w*0.05)+((i-nb_items)*int(win_w*0.05)), y=int(win_h*0.54))
 				lbl4.config(font=("Arial", f_size-2))
 	
-
+	# start analysis
 	def submit():
 		global project_name
 		global video_length
@@ -163,20 +175,26 @@ def GUI_training():
 
 		window.destroy()
 
-		
+	# ------------------------------------------------------------------------------------------------------
+	# 				*** MAIN SETTINGS ***
+	# ------------------------------------------------------------------------------------------------------
+	
 	window=Tk()
-
+	
+	# get screen dimensions info
 	width = window.winfo_screenwidth()
 	height = window.winfo_screenheight()
-
 	win_w = int(width/2)
 	win_h = int(height/1.15)
-
+	
+	# default font size compared to screen dimensions
 	norm_w = 1280
 	norm_f_size = 14
-
+	
+	# calculate fontsize depending on different screen dimensions than default 
 	f_size = round((norm_w*norm_f_size)/width)
 	
+	# main structure of GUI
 	main = {0.03:[['Label',[0.05,'project name:']],['Label',[0.55,'cutting length videos (min):']]],
 			0.08:[['Entry',[0.05,30]],['Entry',[0.55,5]]],
 			0.16:[['Label',[0.05,'choose project path:']]],
@@ -192,9 +210,11 @@ def GUI_training():
 			0.87:[['Label',[0.05,'6.     name:']],['Entry',[0.2,10]],['Label',[0.4,'key:']],['Entry',[0.48,3]]],
 			0.94:[['Button',[0.05,'submit']]]}
 				
-
+	
+	# create list to grab entries of main 
 	entries = []
 	
+	# call main function
 	call_dic(main)
 
 	window.title('Create a new Project!')
