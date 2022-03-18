@@ -3,8 +3,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 
-#def crop_frames(video):
-
+# get a frame of video
 def grep_frame(video):
 	vidcap = cv2.VideoCapture(video)
 	success,image = vidcap.read()
@@ -17,7 +16,7 @@ def grep_frame(video):
 
 		success,image = vidcap.read()
 		count += 1
-  
+
 def shape_selection(event, x, y, flags, param): 
 	global ref_point
     # grab references to the global variables  
@@ -39,6 +38,7 @@ def shape_selection(event, x, y, flags, param):
 
 def draw_grid(image, h, w):
 	global v1, v2, v3, v4, root
+	
 	b,g,r = cv2.split(image)
 	img = cv2.merge((r,g,b))
 
@@ -55,10 +55,9 @@ def draw_grid(image, h, w):
 	                    width = 4)#, activebackground = "#33B5E5")
 	quit_button_window = canvas.create_window(10, 10, anchor='nw', window=quit_button) 
 
-	s1 = 0
-	s2 = 0
-	s3 = 0
-	s4 = 0
+	s1,s2,s3,s4 = 0,0,0,0
+	
+	# get values
 	v1 = IntVar()
 	v2 = IntVar()
 	v3 = IntVar()
@@ -67,6 +66,8 @@ def draw_grid(image, h, w):
 	C2 = Checkbutton(root, text = "", variable = v2) 
 	C3 = Checkbutton(root, text = "", variable = v3)
 	C4 = Checkbutton(root, text = "", variable = v4)  
+	
+	# 
 	C1.place(x=int(w/5), y=int(h/4))
 	C2.place(x=int(w/5), y=int(h/4)*3)
 	C3.place(x=int(w/5)*3, y=int(h/4))
@@ -84,9 +85,9 @@ def submit():
 	root.destroy()
 
 def main(video):
-
 	global image
 	global ref_point, crop
+	
 	image = grep_frame(video)   		
 	ref_point = [] 
 	crop = False  
