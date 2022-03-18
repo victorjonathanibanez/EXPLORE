@@ -163,7 +163,7 @@ def GUI_quadrant():
 	window.geometry(str(win_w)+'x'+str(win_h)+'+10+10')
 	window.mainloop()
 
-	return project_path, project_name, videos, video_length, background#, create_plot
+	return project_path, project_name, videos, video_length, background
 
 
 
