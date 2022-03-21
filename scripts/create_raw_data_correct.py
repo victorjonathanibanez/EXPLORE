@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # -------------------------------------------------------------------------------------
-# ORT analysis - script raw data - developed by Victor Ibañez
+# ORT analysis - script raw data correct - developed by Victor Ibañez
 # 03.04.2021
 # -------------------------------------------------------------------------------------
 
