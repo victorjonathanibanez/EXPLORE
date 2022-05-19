@@ -41,49 +41,6 @@ conda install -c conda-forge opencv==4.5.0
   
 \
 &nbsp;
-
-## :bulb: _How to use EXPLOREs quadrant analysis:_
-
-With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
-
-### Overview on method:
-![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/overview_quadrant.jpg)
-
-\
-&nbsp;
-
-Open a shell- or a terminal window and change to your directory:
-```sh
-cd <your directory>/EXPLORE-main/scripts
-```
-
-Activate your virtual environment:
-```sh
-conda activate XPL
-```
-
-Then enter the following command:
-```sh
-python main_quadrant.py
-```
-(**python3** for macOS)
-
-\
-&nbsp;
-
-**:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpg) for further instructions!)** 
-
-\
-&nbsp;
-
-| Output files | Type | Description | 
-| ------ | ------ | ------ |
-| Dataframe | .csv | The predicted exploration times and frequencies for each quadrant will be stored in a dataframe |
-| Plots | .png | For each animal (video) the frequency will be plotted and stored |
-| Heatmap | .png | An overview on the quadrants exploration- frequency and time will be plotted as heatmaps |
-
-\
-&nbsp;
   
 ## :bulb: _How to use EXPLOREs deep learning-based exploration analysis:_
 
@@ -186,7 +143,50 @@ python main_manual_scoring.py
 &nbsp;
 
 **:arrow_right: This will now open a GUI (refer to the training manual for further instructions!)** 
-  
+
+## :bulb: _How to use EXPLOREs quadrant analysis:_
+
+With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
+
+### Overview on method:
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/overview_quadrant.jpg)
+
+\
+&nbsp;
+
+Open a shell- or a terminal window and change to your directory:
+```sh
+cd <your directory>/EXPLORE-main/scripts
+```
+
+Activate your virtual environment:
+```sh
+conda activate XPL
+```
+
+Then enter the following command:
+```sh
+python main_quadrant.py
+```
+(**python3** for macOS)
+
+\
+&nbsp;
+
+**:arrow_right: This will now open a GUI (see [manual quadrant](https://github.com/victorjonathanibanez/EXPLORE/blob/main/manuals/Manual_quadrant.jpg) for further instructions!)** 
+
+\
+&nbsp;
+
+| Output files | Type | Description | 
+| ------ | ------ | ------ |
+| Dataframe | .csv | The predicted exploration times and frequencies for each quadrant will be stored in a dataframe |
+| Plots | .png | For each animal (video) the frequency will be plotted and stored |
+| Heatmap | .png | An overview on the quadrants exploration- frequency and time will be plotted as heatmaps |
+
+\
+&nbsp;
+
 \
 &nbsp;
 
