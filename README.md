@@ -47,7 +47,7 @@ conda install -c conda-forge opencv==4.5.0
 With the quadrant analysis you can investigate and quantify movement throughout the experiment arena. Two measures are taken: the time animals spent in each quadrant over a given period (*exploration time*) and the frequency of transistions from one quadrant to another (*exploration frequency*).
 
 ### Overview on method:
-![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/quadrant.jpg)
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/overview_quadrant.jpg)
 
 \
 &nbsp;
@@ -91,7 +91,7 @@ EXPLOREs deep learning-based exploration analysis is the major part to investiga
 :exclamation:Note: For acquisition session and testing session two distinct networks have to be trained.
 
 ### Overview on method:
-![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/deeplearning.jpg)
+![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/overview_dl.jpg)
 
 \
 &nbsp;
