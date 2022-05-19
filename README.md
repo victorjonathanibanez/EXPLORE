@@ -1,4 +1,4 @@
-# EXPLORE: A novel deep learning-based analysis method for exploration learning in object recognition tests
+# EXPLORE: A novel deep learning-based analysis method for exploration behaviour in object recognition tests
 
 ![](EXPLORE.gif)
 
