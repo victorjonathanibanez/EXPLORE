@@ -46,6 +46,7 @@ conda install -c conda-forge opencv==4.5.0
 
 EXPLOREs deep learning-based exploration analysis is the major part to investigate object recognition tests. There are three parts: 1. Training a network on a few manually scored samples. 2. Predict on all of your experiment videos. 3. Correct your prediction if necessary. The main measures taken are *exploration time* and *exploration frequency* on each defined object. 
 :exclamation:Note: For acquisition session and testing session two distinct networks have to be trained.
+:exclamation:Note: Note that EXPLORE cuts the video at 5s in order to get rid of frames containing a hand adding a rodent to the box, therefore the videos need to be at least *your video length* + 5s! I recommend to be save and record even a bit longer videos.
 
 ### Overview on method:
 ![](https://github.com/victorjonathanibanez/EXPLORE/blob/main/overview_dl.jpg)
