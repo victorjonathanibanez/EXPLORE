@@ -55,23 +55,24 @@ class BoundingBoxGUI:
 
     def draw_box(self, event):
         self.canvas.coords(self.rect, self.start_x, self.start_y, event.x, event.y)
+        self.bounding_boxes[list(self.object_dict.keys())[self.current_object_index]] = (self.start_x, self.start_y, event.x, event.y)
 
     def clear(self):
+        self.start_x, self.start_y = None, None  # Reset start coordinates
         self.canvas.delete(self.rect)
-        self.clear_current_bounding_box()
-        self.draw_frame() 
+        self.draw_frame()
+        self.bounding_boxes.pop(list(self.object_dict.keys())[self.current_object_index])
 
     def submit(self):
-        if self.start_x is not None and self.start_y is not None:
-            self.bounding_boxes[self.current_object_index] = (self.start_x, self.start_y, self.canvas.coords(self.rect)[2], self.canvas.coords(self.rect)[3])
-            self.clear_current_bounding_box()
-            self.draw_frame()
-
+        if len(self.bounding_boxes) != 0 and len(self.bounding_boxes) > self.current_object_index:
+            #self.clear()
+            self.draw_frame() 
             self.current_object_index += 1
 
             if self.current_object_index < len(self.object_dict):
                 next_object = list(self.object_dict.keys())[self.current_object_index]
                 self.label.config(text="Draw bounding box around: {}".format(next_object))
+                self.start_x, self.start_y = None, None  # Reset start coordinates
             else:
                 self.cap.release()
                 self.root.destroy()
@@ -79,10 +80,6 @@ class BoundingBoxGUI:
         else:
             messagebox.showinfo("Information", "Please draw a bounding box before submitting.")
 
-    def clear_current_bounding_box(self):
-        self.start_x = None
-        self.start_y = None
-        self.canvas.delete(self.rect)
 
 if __name__ == "__main__":
     video_path = "/Users/victor/Desktop/work/Masterarbeit/vids/new_analysis_deep_learning.mp4"  # Provide path to your video
