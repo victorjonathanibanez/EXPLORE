@@ -2,8 +2,9 @@ from tkinter import *
 from tkinter import filedialog
 
 class GuiTraining:
-    def __init__(self, master):
+    def __init__(self, master, on_close_callback=None):
         self.master = master
+        self.on_close_callback = on_close_callback
         master.title("Create a new project")
 
         # Variable to store the submitted data
@@ -119,10 +120,14 @@ class GuiTraining:
         Button(error_window, text="OK", command=error_window.destroy).pack(pady=10)
         error_window.mainloop()
 
-    def _check_submitted_fields(self, entries_to_check):
+    def _check_if_submitted_fields_contain_entries(self, entries_to_check):
         for value in entries_to_check.values():
-            if value == 0:
-                print(value)
+            if len(value) == 0:
+                self._show_error_message()
+
+    def _check_if_object_key_pairs_exist(self, entries_to_check):
+        for value in entries_to_check:
+            if len(value[0]) == 0 or len(value[1]) == 0:
                 self._show_error_message()
 
     def _submit(self):
@@ -136,6 +141,10 @@ class GuiTraining:
         # Retrieve values from dynamically added objects
         objects_data = [(obj_entry.get(), key_entry.get()) for _, _, obj_entry, key_entry in self.object_entries]
 
+        # Retrieve the project_path from the label text
+        project_path_label_text = self.master.grid_slaves(row=3, column=1)[0].cget("text")
+        project_path = project_path_label_text if project_path_label_text else []
+
         # Update the Objects label
         objects_text = "\n".join([f"{obj} - {key}" for obj, key in objects_data])
         self.objects_label.config(text=objects_text)
@@ -143,13 +152,17 @@ class GuiTraining:
         # Create a dictionary with all the values
         data = {
             "Project Name": project_name,
+            "Project Path": project_path,
             "Video Length": video_length,
-            "Random Sampling": random_sampling,
-            "Manual Scoring Video Length": manual_scoring_video_length,
-            "Objects": objects_data
+            "Manual Scoring Video Length": manual_scoring_video_length
         }
-        print(data)
-        self._check_submitted_fields(data)
+        
+        # checks for existing entries
+        self._check_if_submitted_fields_contain_entries(data)
+        self._check_if_object_key_pairs_exist(objects_data)
+
+        data["Random Sampling"] = random_sampling
+        data["Objects"] = objects_data
 
         # Store the data in the instance variable
         self.submitted_data = data
@@ -157,13 +170,22 @@ class GuiTraining:
 
     def _submit_and_close(self):
         # Submit the data
-        self._submit()
+        data = self._submit()
         
         # Close the window
         self.master.destroy()
 
+        if self.on_close_callback:
+            self.on_close_callback(self.submitted_data)
+
+def on_window_close(data):
+    print("Data from GUI:", data)
+    return
 
 if __name__ == "__main__":
+    def on_window_close(data):
+        print("Data from GUI:", data)
+
     root = Tk()
-    my_gui = GuiTraining(root)
+    my_gui = GuiTraining(root, on_close_callback=on_window_close)
     root.mainloop()

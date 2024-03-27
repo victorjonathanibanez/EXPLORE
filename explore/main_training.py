@@ -6,26 +6,30 @@
 # -------------------------------------------------------------------------------------
 
 import os
-import tkinter as tk
-from tkinter import simpledialog, filedialog
-from gui_training import GUITraining
-from random_distribution import RandomDistributor
-from gui_crop_frames import ObjectSelector
-from object_extraction import ObjectExtractor
+from tkinter import *
+from tkinter import filedialog
+
+#import tkinter as Tk
+#from tkinter import simpledialog, filedialog
+from gui.gui_test import GuiTraining
+from utils.random_distribution import RandomDistributor
+from gui.gui_crop_frames import ObjectSelector
+from gui.object_extraction import ObjectExtractor
 from video_distribution import VideoDistributor
 from video_scroll import VideoScroll
-from raw_data_creation import RawDataCreator
-from training_data_creation import TrainingDataCreator
-from multi_class_network import MultiClassNetworkTrainer
+from utils.raw_data_creation import RawDataCreator
+from utils.training_data_creation import TrainingDataCreator
+from models.multi_class_network import MultiClassNetworkTrainer
 import shutil
 
 def main():
     # Get project settings from GUI_training class
-    gui_training = GUITraining()
-    gui_training.create_gui()
-
-    project_path, project_name, time, selection, videos, objects, o_keys, nk, ttime = gui_training.get_values()
-
+    root = Tk()
+    my_gui = GuiTraining(root)
+    root.mainloop()
+    data_from_gui = my_gui.submitted_data
+    #project_path, project_name, time, selection, videos, objects, o_keys, nk, ttime = gui_training.get_values()
+    print(data_from_gui)
     # Remove empty strings from objects and o_keys lists
     objects = [x for x in objects if x]
     o_keys = [x for x in o_keys if x]
