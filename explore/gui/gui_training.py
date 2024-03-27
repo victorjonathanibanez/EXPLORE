@@ -1,110 +1,229 @@
 from tkinter import *
-import tkinter.filedialog as fd
-import os
+from tkinter import filedialog
 
-class GUITraining:
-    def __init__(self):
-        self.project_path = None
-        self.entries = []
-        self.var = None
+class GuiTraining:
+    def __init__(self, master, on_close_callback=None):
+        self.master = master
+        self.on_close_callback = on_close_callback
+        master.title("EXPLORE - Create a new project")
 
-    def create_gui(self):
-        self.window = Tk()
-        self.window.title('Create a new Project!')
+        # Variable to store the submitted data
+        self.submitted_data = None
 
-        width = self.window.winfo_screenwidth()
-        height = self.window.winfo_screenheight()
-        win_w = int(width / 2)
-        win_h = int(height / 1.15)
+        # Labels
+        Label(master, text="Project Name:").grid(row=0, column=0, sticky="e")
+        Label(master, text="Video Length (min):").grid(row=1, column=0, sticky="e")
+        Label(master, text="Choose Project Path:").grid(row=2, column=0, sticky="e")
+        Label(master, text="Choose Videos Path:").grid(row=4, column=0, sticky="e")
+        Label(master, text="").grid(row=5, column=0)  # Empty line
+        #Label(master, text="Random Sampling:").grid(row=6, column=0, sticky="e")
+        Label(master, text="Length of Manual Scoring Video (min):").grid(row=7, column=0, sticky="e")
+        Label(master, text="Objects:").grid(row=8, column=0, sticky="e")
 
-        norm_w = 1280
-        norm_f_size = 14
-        f_size = round((norm_w * norm_f_size) / width)
+        # Create Spinbox widgets for video length and manual scoring video length
+        self.video_length_spinbox = Spinbox(master, from_=1, to=60)  # Example range from 1 to 60 minutes
+        self.video_length_spinbox.grid(row=1, column=1, pady=5, padx=10, sticky="w")
 
-        main_structure = {
-            0.03: [['Label', [0.05, 'Project Name:']], ['Entry', [0.15, 30]]],
-            0.08: [['Label', [0.05, 'Video Length (min):']], ['Entry', [0.15, 5]]],
-            0.13: [['Label', [0.05, 'Choose Project Path:']], ['Button', [0.15, 'Browse', self.open_path]]],
-            0.18: [['Label', [0.05, 'Random Sampling:']], ['Radiobutton', [0.15, 'Yes', 0.3, 'No']]],
-            0.23: [['Label', [0.05, 'Length of Manual Scoring Video (min):']], ['Entry', [0.35, 5]]],
-            0.28: [['Label', [0.05, 'Add Objects:']]],
-            0.33: [['Label', [0.05, '1. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.38: [['Label', [0.05, '2. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.43: [['Label', [0.05, '3. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.48: [['Label', [0.05, '4. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.53: [['Label', [0.05, '5. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.58: [['Label', [0.05, '6. Name:']], ['Entry', [0.15, 10]], ['Label', [0.35, 'Key:']], ['Entry', [0.45, 3]]],
-            0.63: [['Button', [0.05, 'Submit']]],
+        self.manual_scoring_video_length_spinbox = Spinbox(master, from_=1, to=60)  # Example range from 1 to 60 minutes
+        self.manual_scoring_video_length_spinbox.grid(row=7, column=1, pady=5, padx=10, sticky="w")
+
+        # Entry fields
+        self.project_name_entry = Entry(master)
+        self.project_name_entry.grid(row=0, column=1, pady=5, padx=10, sticky="w")
+
+        # Initial width for project path entry
+        self.project_path_width = 20
+
+        # Choose Project Path button
+        self.choose_path_button = Button(master, text="Select", command=self._choose_project_path)
+        self.choose_path_button.grid(row=2, column=1, sticky="w", padx=10, pady=5)
+
+        # Choose Project Path button
+        self.choose_vid_path_button = Button(master, text="Select", command=self._choose_video_path)
+        self.choose_vid_path_button.grid(row=4, column=1, sticky="w", padx=10, pady=5)
+
+        Label(master, text="").grid(row=5, column=1)  # Empty line
+
+        #self.random_sampling_var = IntVar()
+        #Radiobutton(master, text="Yes", variable=self.random_sampling_var, value=1).grid(row=6, column=1, padx=(0, 0))
+        #Radiobutton(master, text="No", variable=self.random_sampling_var, value=0).grid(row=6, column=1, padx=(0, 100))
+
+        # Objects label
+        self.objects_label = Label(master, text="")
+        self.objects_label.grid(row=8, column=1, pady=5, padx=10, sticky="w")
+
+        # Add Object button
+        self.add_object_button = Button(master, text="Add Object", command=self._add_object)
+        self.add_object_button.grid(row=8, column=1, pady=5, padx=10, sticky="w")
+
+        # Remove Object button (disabled initially)
+        self.remove_object_button = Button(master, text="Remove Object", command=self._remove_object, state=DISABLED)
+        self.remove_object_button.grid(row=8, column=2, pady=5, padx=10, sticky="e")
+
+        # Submit button
+        self.submit_button = Button(master, text="Submit", command=self._submit_and_close)
+        self.submit_button.grid(row=11, column=0, columnspan=2, pady=(20, 5))
+
+        # List to store dynamically added Entry widgets
+        self.object_entries = []
+
+    def _choose_project_path(self):
+        project_path = filedialog.askdirectory()
+        if project_path:
+            # Display the path as a string below the 'Choose Project Path'
+            Label(self.master, text=project_path).grid(row=3, column=1, columnspan=2, pady=5, padx=10, sticky="w")
+            self.project_path_width = len(project_path) if len(project_path) > 20 else 20
+            self.choose_path_button.grid(row=2, column=1, sticky="w", pady=5)
+        else:
+            self.choose_path_button.grid(row=2, column=1, sticky="w", pady=5)
+
+    '''def _choose_video_path(self):
+        video_path = filedialog.askdirectory()
+        if video_path:
+            # Display the path as a string below the 'Choose Project Path'
+            Label(self.master, text=video_path).grid(row=5, column=1, columnspan=2, pady=5, padx=10, sticky="w")
+            self.video_path_width = len(video_path) if len(video_path) > 20 else 20
+            self.choose_vid_path_button.grid(row=4, column=1, sticky="w", pady=5)
+        else:
+            self.choose_vid_path_button.grid(row=4, column=1, sticky="w", pady=5)'''
+    def _choose_video_path(self):
+        video_paths = filedialog.askopenfilenames()
+        if video_paths:
+            # Display the paths as a list below the 'Choose Videos Path'
+            paths_text = "\n".join(video_paths)
+            Label(self.master, text=paths_text).grid(row=5, column=1, columnspan=2, pady=5, padx=10, sticky="w")
+            self.video_path_width = max(len(path) for path in video_paths) if video_paths else 20
+            self.choose_vid_path_button.grid(row=4, column=1, sticky="w", pady=5)
+        else:
+            self.choose_vid_path_button.grid(row=4, column=1, sticky="w", pady=5)
+
+    def _add_object(self):
+        # Create labels for the first entry fields
+        add_object_label = Label(self.master, text="Add object name:")
+        add_object_label.grid(row=len(self.object_entries) + 9, column=0, padx=10, pady=5, sticky="e")
+
+        add_key_label = Label(self.master, text="Add key: (a-z; 'p' reserved):")
+        add_key_label.grid(row=len(self.object_entries) + 9, column=2, padx=10, pady=5, sticky="e")
+
+        # Create Entry widgets for object and key
+        object_entry = Entry(self.master, width=20)
+        key_entry = Entry(self.master, width=5)
+
+        # Grid layout for master (not the frame)
+        object_entry.grid(row=len(self.object_entries) + 9, column=1, padx=10, pady=5, sticky="w")
+        key_entry.grid(row=len(self.object_entries) + 9, column=3, padx=10, pady=5, sticky="w")
+
+        # Append the Entry widgets to the object_entries list
+        self.object_entries.append((add_object_label, add_key_label, object_entry, key_entry))
+
+        # Enable the Remove Object button
+        self.remove_object_button["state"] = NORMAL
+
+        # Move the Submit button dynamically
+        self.submit_button.grid(row=len(self.object_entries) + 9, column=0, columnspan=2, pady=(20, 5))
+
+    def _remove_object(self):
+        if self.object_entries:
+            # Remove the labels and Entry widgets from the master
+            add_object_label, add_key_label, object_entry, key_entry = self.object_entries.pop()
+            add_object_label.destroy()
+            add_key_label.destroy()
+            object_entry.destroy()
+            key_entry.destroy()
+
+            # Disable the Remove Object button if there are no more objects
+            if not self.object_entries:
+                self.remove_object_button["state"] = DISABLED
+
+                # Move the Submit button back to the original position
+                self.submit_button.grid(row=11, column=0, columnspan=2, pady=(20, 5))
+
+
+    def _show_error_message(self):
+        error_window = Toplevel(self.master)
+        error_window.title("Error")
+        Label(error_window, text="Missing entries!").pack(padx=20, pady=20)
+        Button(error_window, text="OK", command=error_window.destroy).pack(pady=10)
+        error_window.mainloop()
+        
+
+    def _check_if_submitted_fields_contain_entries(self, entries_to_check):
+        for value in entries_to_check.values():
+            if isinstance(value, str) and len(value) == 0:
+                self._show_error_message()
+            elif isinstance(value, list) and len(value) == 0:
+                self._show_error_message()
+
+    def _check_if_object_key_pairs_exist(self, entries_to_check):
+        for obj_name, obj_key in entries_to_check:
+            if len(obj_name.strip()) == 0 or len(obj_key.strip()) == 0:
+                self._show_error_message()
+                
+        if not entries_to_check:
+            self._show_error_message()
+
+    def _submit(self):
+
+        # Retrieve values from entry fields
+        project_name = self.project_name_entry.get()
+        video_length = self.video_length_spinbox.get()
+        #random_sampling = bool(self.random_sampling_var.get())
+        manual_scoring_video_length = self.manual_scoring_video_length_spinbox.get()
+
+        # Retrieve values from dynamically added objects
+        objects_data = [(obj_entry.get(), key_entry.get()) for _, _, obj_entry, key_entry in self.object_entries]
+
+        # Retrieve the project_path from the label text
+        project_path_label_text = self.master.grid_slaves(row=3, column=1)[0].cget("text")
+        project_path = project_path_label_text if project_path_label_text else []
+
+         # Retrieve the project_path from the label text
+        video_path_label_text = self.master.grid_slaves(row=5, column=1)[0].cget("text")
+        video_path = video_path_label_text if video_path_label_text else []
+
+        # Update the Objects label
+        objects_text = "\n".join([f"{obj} - {key}" for obj, key in objects_data])
+        self.objects_label.config(text=objects_text)
+
+        # Create a dictionary with all the values
+        data = {
+            "Project Name": project_name,
+            "Project Path": project_path,
+            "Videos Path": video_path,
+            "Video Length": video_length,
+            "Manual Scoring Video Length": manual_scoring_video_length
         }
+        
+        # checks for existing entries
+        self._check_if_submitted_fields_contain_entries(data)
+        self._check_if_object_key_pairs_exist(objects_data)
 
-        self.call_dic(main_structure, self.window, f_size)
+        #data["Random Sampling"] = random_sampling
+        data["Objects"] = objects_data
 
-        self.window.geometry(str(win_w) + 'x' + str(win_h) + '+10+10')
-        self.window.mainloop()
+        # Store the data in the instance variable
+        self.submitted_data = data
 
-    def call_dic(self, dic, window, f_size):
-        for key, value in dic.items():
-            for i in range(len(value)):
-                element_type, element_values = value[i]
 
-                if element_type == 'Label':
-                    self.create_label(window, *element_values, f_size)
+    def _submit_and_close(self):
+        # Submit the data
+        data = self._submit()
+        
+        # Close the window
+        self.master.destroy()
 
-                elif element_type == 'Entry':
-                    self.create_entry(window, *element_values)
+        if self.on_close_callback:
+            self.on_close_callback(self.submitted_data)
 
-                elif element_type == 'Button':
-                    if element_values[1] == 'path':
-                        # If it's the 'path' button, call open_path method
-                        self.create_button(window, *element_values, f_size, command=self.open_path)
-                    elif element_values[1] == 'vid':
-                        # If it's the 'vid' button, call open_vid method
-                        self.create_button(window, *element_values, f_size, command=self.open_vid)
-                    else:
-                        # Handle other buttons as needed
-                        self.create_button(window, *element_values, f_size)
-
-                elif element_type == 'Radiobutton':
-                    self.create_radiobutton(window, *element_values, f_size)
-
-    def create_label(self, window, position, text, f_size):
-        label = Label(window, text=text)
-        label.grid(row=int(position * 100), column=0, sticky=W, padx=5, pady=5)
-        label.config(font=("TkDefaultFont", f_size, "italic"))
-
-    def create_entry(self, window, position, width):
-        entry = Entry(window, bd=2, width=width)
-        entry.grid(row=int(position * 100), column=1, sticky=W, padx=5, pady=5)
-        self.entries.append(entry)
-
-    def create_button(self, window, position, text, f_size, command=None):
-        button = Button(window, text=text, command=lambda: command())
-        button.place(x=int(window.winfo_screenwidth() * position), y=int(window.winfo_screenheight() * position))
-        button.config(font=("TkDefaultFont", f_size, "italic"))
-
-    def create_radiobutton(self, window, position, text1, position2, text2, f_size):
-        global var
-
-        var = IntVar()
-        R1 = Radiobutton(window, text=text1, variable=var, value=1, command=self.handle_option_1)
-        R1.grid(row=int(position * 100), column=3, sticky=W, padx=5, pady=5)
-        R1.config(font=("TkDefaultFont", f_size, "italic"))
-
-        R2 = Radiobutton(window, text=text2, variable=var, value=2, command=self.handle_option_2)
-        R2.grid(row=int(position2 * 100), column=3, sticky=W, padx=5, pady=5)
-        R2.config(font=("TkDefaultFont", f_size, "italic"))
-
-    def open_path(self):
-        project_path = fd.askdirectory()
-        self.create_label(self.window, 0.13, project_path.ljust(1000), 14)
-        self.project_path = project_path
-
-    def handle_option_1(self):
-        print("Handling option 1")
-
-    def handle_option_2(self):
-        print("Handling option 2")
+def on_window_close(data):
+    print("Data from GUI:", data)
+    return
 
 if __name__ == "__main__":
-    gui_training = GUITraining()
-    gui_training.create_gui()
+    def on_window_close(data):
+        print("Data from GUI:", data)
+
+    root = Tk()
+    my_gui = GuiTraining(root, on_close_callback=on_window_close)
+    root.mainloop()
+

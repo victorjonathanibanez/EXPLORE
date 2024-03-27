@@ -11,8 +11,8 @@ from tkinter import filedialog
 
 #import tkinter as Tk
 #from tkinter import simpledialog, filedialog
-from gui.gui_test import GuiTraining
-from utils.random_distribution import RandomDistributor
+from gui.gui_training import GuiTraining
+#from utils.random_distribution import RandomDistributor
 from gui.gui_crop_frames import ObjectSelector
 from gui.object_extraction import ObjectExtractor
 from video_distribution import VideoDistributor
@@ -25,38 +25,32 @@ import shutil
 def main():
     # Get project settings from GUI_training class
     root = Tk()
-    my_gui = GuiTraining(root)
+    training_gui = GuiTraining(root)
     root.mainloop()
-    data_from_gui = my_gui.submitted_data
+    data_from_gui = training_gui.submitted_data
     #project_path, project_name, time, selection, videos, objects, o_keys, nk, ttime = gui_training.get_values()
     print(data_from_gui)
     # Remove empty strings from objects and o_keys lists
-    objects = [x for x in objects if x]
-    o_keys = [x for x in o_keys if x]
+    #objects = [x for x in objects if x]
+    #o_keys = [x for x in o_keys if x]
+    project_name = data_from_gui['Project Name']
+    project_path = data_from_gui['Project Path']
+    videos_path = data_from_gui['Videos Path'].split('\n')
+    videos_length = data_from_gui['Video Length']
+    manual_scoring_video_length = data_from_gui['Manual Scoring Video Length']
 
-    time = int(time)
-    ttime = int(ttime)
+    #time = int(time)
+    #ttime = int(ttime)
 
     project_folder = os.path.join(project_path, project_name)
-
+    
     # Create project folder if it doesn't exist
-    if not os.path.isdir(project_folder):
-        os.makedirs(project_folder)
+    #if not os.path.isdir(project_folder):
+        #os.makedirs(project_folder)
 
-    if selection == 1:
-        print('apply kmeans clustering...')
-        vid_path = videos
-
-        nk = int(float(nk))
-
-        # Randomly sample videos
-        videos = RandomDistributor(vid_path, nk)
-
-        rs = [os.path.basename(i) for i in videos]
-        print('videos randomly sampled: ', rs)
 
     # Extract training frames
-    ref_point = ObjectSelector().main(videos[0])
+    ref_point = ObjectSelector().main(videos_path[0])
 
     # Create sampled video
     print('creating video for labeling...')

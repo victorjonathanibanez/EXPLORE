@@ -8,11 +8,11 @@ class ObjectSelector:
         self.image = None
         self.ref_point = []
         self.crop = False
-        self.v1 = IntVar()
-        self.v2 = IntVar()
-        self.v3 = IntVar()
-        self.v4 = IntVar()
         self.root = None
+        self.v1 = None
+        self.v2 = None
+        self.v3 = None
+        self.v4 = None
 
     def grep_frame(self, video):
         vidcap = cv2.VideoCapture(video)
@@ -39,8 +39,6 @@ class ObjectSelector:
         b, g, r = cv2.split(self.image)
         img = cv2.merge((r, g, b))
 
-        self.root = Tk()
-
         im = Image.fromarray(img)
         imgtk = ImageTk.PhotoImage(image=im)
 
@@ -52,6 +50,11 @@ class ObjectSelector:
         quit_button_window = canvas.create_window(10, 10, anchor='nw', window=quit_button)
 
         # get values
+        self.v1 = IntVar()
+        self.v2 = IntVar()
+        self.v3 = IntVar()
+        self.v4 = IntVar()
+
         C1 = Checkbutton(self.root, text="", variable=self.v1)
         C2 = Checkbutton(self.root, text="", variable=self.v2)
         C3 = Checkbutton(self.root, text="", variable=self.v3)
@@ -82,6 +85,8 @@ class ObjectSelector:
         cv2.setMouseCallback("draw rectangle around surface / 'r' for again / 'c' for crop", self.shape_selection)
         cv2.startWindowThread()
 
+        self.root = Tk()
+
         while True:
             cv2.imshow("draw rectangle around surface / 'r' for again / 'c' for crop", self.image)
             key = cv2.waitKey(1) & 0xFF
@@ -99,3 +104,10 @@ class ObjectSelector:
         cv2.destroyAllWindows()
 
         return self.ref_point  # self.s1, self.s2, self.s3, self.s4,
+
+# Example usage
+if __name__ == "__main__":
+    selector = ObjectSelector()
+    video_path = filedialog.askopenfilename()  # Get video path using file dialog
+    ref_point = selector.main(video_path)
+    print("Selected reference points:", ref_point)
