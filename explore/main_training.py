@@ -21,6 +21,8 @@ from utils.raw_data_creation import RawDataCreator
 from utils.training_data_creation import TrainingDataCreator
 from models.multi_class_network import MultiClassNetworkTrainer
 import shutil
+from collections import OrderedDict
+
 
 def main():
     # Get project settings from GUI_training class
@@ -31,30 +33,29 @@ def main():
     print(data_from_gui)
     project_name = data_from_gui['Project Name']
     project_path = data_from_gui['Project Path']
-    videos_path = data_from_gui['Videos Path'].split('\n')
-    videos_length = data_from_gui['Video Length']
-    manual_scoring_video_length = data_from_gui['Manual Scoring Video Length']
-    objects_dict = dict(data_from_gui['Objects'])
-
-    #time = int(time)
-    #ttime = int(ttime)
+    video_paths = data_from_gui['Video Paths']
+    video_length = int(data_from_gui['Video Length'])
+    manual_scoring_video_length = int(data_from_gui['Manual Scoring Video Length'])
+    object_list = list(dict(data_from_gui['Objects']).keys())
+    keys_list = list(dict(data_from_gui['Objects']).values())
 
     project_folder = os.path.join(project_path, project_name)
     
     # Create project folder if it doesn't exist
-    #if not os.path.isdir(project_folder):
-        #os.makedirs(project_folder)
+    if not os.path.isdir(project_folder):
+        os.makedirs(project_folder)
 
 
     # Extract training frames
-    #ref_point = ObjectSelector().main(videos_path[0])
-    gui = BoundingBoxGUI(videos_path[0], objects_dict)
+    gui = BoundingBoxGUI(video_paths[0], object_list)
     bounding_boxes = gui.get_bounding_boxes()
     print(bounding_boxes)
 
+    background_coords = bounding_boxes['background']
     # Create sampled video
     print('creating video for labeling...')
-    VideoDistributor.vid_distributor(project_path, project_name, ref_point, videos, time, ttime)
+    distributor = VideoDistributor()
+    distributor.vid_distributor(project_path, project_name, background_coords, video_paths, video_length, manual_scoring_video_length)
 
     # Define label paths
     label_path = os.path.join(project_folder, 'labeled')
@@ -62,26 +63,26 @@ def main():
     if not os.path.isdir(label_path):
         os.makedirs(label_path)
 
-    names = objects
-    keys = o_keys
+    #names = objects
+    #keys = o_keys
 
-    obj_key = {names[i]: keys[i] for i in range(len(names))}
+    #obj_key = {names[i]: keys[i] for i in range(len(names))}
 
-    for i in names:
-        path = os.path.join(label_path, i)
+    for obj in object_list:
+        path = os.path.join(label_path, obj)
         if not os.path.isdir(path):
             os.makedirs(path)
 
-    no_path = os.path.join(label_path, 'no')
+    no_label_path = os.path.join(label_path, 'no')
 
-    if not os.path.isdir(no_path):
-        os.makedirs(no_path)
+    if not os.path.isdir(no_label_path):
+        os.makedirs(no_label_path)
 
-    vid = os.path.join(project_path, project_name, project_name) + '.MP4'
+    label_video = os.path.join(project_path, project_name, project_name) + '_label_video.MP4'
 
     # Hand label video
     video_scroll_obj = VideoScroll()
-    dic = video_scroll_obj.initialize_video_scroll(vid, names, keys)
+    dic = video_scroll_obj.initialize_video_scroll(label_video, object_list, keys_list)
 
     # Write logfile
     L = ['project: \n', project_name, '\n', '\n',

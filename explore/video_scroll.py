@@ -1,4 +1,4 @@
-import cv2
+'''import cv2
 import numpy as np
 import os
 
@@ -129,3 +129,91 @@ class VideoScroll:
 # Example Usage:
 # video_scroll_obj = VideoScroll()
 # video_scroll_obj.initialize_video_scroll('your_video.mp4', ['Object1', 'Object2'], ['a', 'b'])
+'''
+
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QScrollBar
+from PyQt5.QtGui import QPixmap, QImage
+import cv2
+
+class VideoLabelingGUI(QMainWindow):
+    def __init__(self, video_path, key_dict):
+        super().__init__()
+        self.video_path = video_path
+        self.key_dict = key_dict
+        self.sequences = {}
+        self.current_sequence = None
+        self.frame_counter = 0
+        self.cap = cv2.VideoCapture(self.video_path)
+
+        self.setWindowTitle("Video Labeling Tool")
+        self.setGeometry(100, 100, 800, 600)
+
+        self.frame_label = QLabel(self)
+        self.frame_label.setGeometry(50, 50, 700, 400)
+
+        self.key_display = QLabel(self)
+        self.key_display.setGeometry(50, 470, 200, 30)
+
+        self.scrollbar = QScrollBar(self)
+        self.scrollbar.setGeometry(50, 520, 700, 20)
+        self.scrollbar.valueChanged.connect(self.on_scroll)
+
+        self.submit_button = QPushButton('Submit', self)
+        self.submit_button.setGeometry(50, 550, 100, 30)
+        self.submit_button.clicked.connect(self.submit)
+
+        self.update_frame()
+
+    def on_scroll(self, value):
+        self.frame_counter = value
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.frame_counter)
+        self.update_frame()
+
+    def keyPressEvent(self, event):
+        key = event.text()
+        if key in self.key_dict:
+            if self.current_sequence is None:
+                self.current_sequence = [self.frame_counter]
+                if self.key_display.text() != self.key_dict[key]:
+                    self.key_display.setText(self.key_dict[key])
+                else:
+                    self.key_display.setText("")
+            else:
+                self.current_sequence.append(self.frame_counter)
+        elif key == " " and self.current_sequence is not None:
+            if len(self.current_sequence) > 1:
+                sequence_key = self.key_display.text()
+                if sequence_key in self.key_dict.values():
+                    if sequence_key not in self.sequences:
+                        self.sequences[sequence_key] = []
+                    self.sequences[sequence_key].append((self.current_sequence[1], self.frame_counter))
+            self.current_sequence = None
+            self.key_display.setText("")
+
+    def update_frame(self):
+        ret, frame = self.cap.read()
+        if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            height, width, channel = frame.shape
+            bytes_per_line = 3 * width
+            q_img = QPixmap.fromImage(QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888))
+            self.frame_label.setPixmap(q_img)
+
+    def submit(self):
+        for key in self.sequences:
+            if len(self.sequences[key]) == 0:
+                del self.sequences[key]
+        self.close()
+
+def main():
+    app = QApplication(sys.argv)
+    video_path = "/Users/victor/Desktop/work/test/test_label_video.MP4"
+    key_dict = {"a": "sequence_a", "b": "sequence_b"}  # Example key-value pairs
+    gui = VideoLabelingGUI(video_path, key_dict)
+    print(gui.sequences)  # You can access the labeled sequences from here
+    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
+

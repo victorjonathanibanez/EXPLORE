@@ -5,9 +5,10 @@ from collections import OrderedDict
 from PIL import Image, ImageTk
 
 class BoundingBoxGUI:
-    def __init__(self, video_path, object_dict):
+    def __init__(self, video_path, object_list):
         self.video_path = video_path
-        self.object_dict = object_dict
+        self.object_list = object_list
+        self.object_list.insert(0,'background')
         self.current_object_index = 0
         self.bounding_boxes = OrderedDict()
 
@@ -25,8 +26,8 @@ class BoundingBoxGUI:
 
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.pack(side=tk.RIGHT)
-
-        self.label = tk.Label(self.root, text="Draw bounding box around: {}".format(list(self.object_dict.keys())[0]))
+        
+        self.label = tk.Label(self.root, text="Draw bounding box around: {}".format(self.object_list[0]))
         self.label.pack()
 
         self.root.bind("<ButtonPress-1>", self.start_box)
@@ -58,21 +59,21 @@ class BoundingBoxGUI:
 
     def draw_box(self, event):
         self.canvas.coords(self.rect, self.start_x, self.start_y, event.x, event.y)
-        self.bounding_boxes[list(self.object_dict.keys())[self.current_object_index]] = (self.start_x, self.start_y, event.x, event.y)
+        self.bounding_boxes[self.object_list[self.current_object_index]] = (self.start_x, self.start_y, event.x, event.y)
 
     def clear(self):
         self.start_x, self.start_y = None, None
         self.canvas.delete(self.rect)
         self.draw_frame()
-        self.bounding_boxes.pop(list(self.object_dict.keys())[self.current_object_index])
+        self.bounding_boxes.pop(self.object_list[self.current_object_index])
 
     def submit(self):
         if len(self.bounding_boxes) != 0 and len(self.bounding_boxes) > self.current_object_index:
             self.draw_frame() 
             self.current_object_index += 1
 
-            if self.current_object_index < len(self.object_dict):
-                next_object = list(self.object_dict.keys())[self.current_object_index]
+            if self.current_object_index < len(self.object_list):
+                next_object = self.object_list[self.current_object_index]
                 self.label.config(text="Draw bounding box around: {}".format(next_object))
                 self.start_x, self.start_y = None, None
             else:
@@ -83,9 +84,9 @@ class BoundingBoxGUI:
 
 if __name__ == "__main__":
     video_path = "/Volumes/VERBATIM_HD/NOR/same_object_30092020/1-converted.avi"
-    object_dict = {"background": "b", "object1": "a", "object2": "c"}
+    object_list = ["object1", "object2"]
 
-    gui = BoundingBoxGUI(video_path, object_dict)
+    gui = BoundingBoxGUI(video_path, object_list)
     bounding_boxes = gui.get_bounding_boxes()
     print("Bounding boxes:", bounding_boxes)
 
