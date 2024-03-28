@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 
-class GuiTraining:
+class TrainingGUI:
     def __init__(self, master, on_close_callback=None):
         self.master = master
         self.on_close_callback = on_close_callback
@@ -224,6 +224,6 @@ if __name__ == "__main__":
         print("Data from GUI:", data)
 
     root = Tk()
-    my_gui = GuiTraining(root, on_close_callback=on_window_close)
+    my_gui = TrainingGUI(root, on_close_callback=on_window_close)
     root.mainloop()
 

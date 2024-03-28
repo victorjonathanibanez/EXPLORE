@@ -11,9 +11,9 @@ from tkinter import filedialog
 
 #import tkinter as Tk
 #from tkinter import simpledialog, filedialog
-from gui.gui_training import GuiTraining
+from gui.training import TrainingGUI
 #from utils.random_distribution import RandomDistributor
-from gui.gui_crop_frames import ObjectSelector
+from gui.bounding_box import BoundingBoxGUI
 from gui.object_extraction import ObjectExtractor
 from video_distribution import VideoDistributor
 from video_scroll import VideoScroll
@@ -25,19 +25,16 @@ import shutil
 def main():
     # Get project settings from GUI_training class
     root = Tk()
-    training_gui = GuiTraining(root)
+    training_gui = TrainingGUI(root)
     root.mainloop()
     data_from_gui = training_gui.submitted_data
-    #project_path, project_name, time, selection, videos, objects, o_keys, nk, ttime = gui_training.get_values()
     print(data_from_gui)
-    # Remove empty strings from objects and o_keys lists
-    #objects = [x for x in objects if x]
-    #o_keys = [x for x in o_keys if x]
     project_name = data_from_gui['Project Name']
     project_path = data_from_gui['Project Path']
     videos_path = data_from_gui['Videos Path'].split('\n')
     videos_length = data_from_gui['Video Length']
     manual_scoring_video_length = data_from_gui['Manual Scoring Video Length']
+    objects_dict = dict(data_from_gui['Objects'])
 
     #time = int(time)
     #ttime = int(ttime)
@@ -50,7 +47,10 @@ def main():
 
 
     # Extract training frames
-    ref_point = ObjectSelector().main(videos_path[0])
+    #ref_point = ObjectSelector().main(videos_path[0])
+    gui = BoundingBoxGUI(videos_path[0], objects_dict)
+    bounding_boxes = gui.get_bounding_boxes()
+    print(bounding_boxes)
 
     # Create sampled video
     print('creating video for labeling...')

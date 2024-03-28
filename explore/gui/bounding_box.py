@@ -17,7 +17,7 @@ class BoundingBoxGUI:
         self.cap = cv2.VideoCapture(self.video_path)
         self.frame = self.get_frame()
         
-        self.canvas = tk.Canvas(self.root, width=self.frame.shape[0], height=self.frame.shape[1])
+        self.canvas = tk.Canvas(self.root, width=self.frame.shape[1], height=self.frame.shape[0])
         self.canvas.pack()
 
         self.clear_button = tk.Button(self.root, text="Clear", command=self.clear)
@@ -35,18 +35,21 @@ class BoundingBoxGUI:
         self.draw_frame()
         self.root.mainloop()
 
+    def get_bounding_boxes(self):
+        return self.bounding_boxes
+
     def get_frame(self):
         ret, frame = self.cap.read()
         if ret:
-            return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            return frame
         else:
             messagebox.showerror("Error", "Video cannot be read.")
             self.root.destroy()
 
     def draw_frame(self):
-        self.photo = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # Convert frame to BGR format
-        self.photo = Image.fromarray(self.photo)  # Convert BGR image to PIL Image
-        self.photo = ImageTk.PhotoImage(self.photo)  # Convert PIL Image to PhotoImage
+        self.photo = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        self.photo = Image.fromarray(self.photo)
+        self.photo = ImageTk.PhotoImage(self.photo)
         self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
     def start_box(self, event):
@@ -58,31 +61,32 @@ class BoundingBoxGUI:
         self.bounding_boxes[list(self.object_dict.keys())[self.current_object_index]] = (self.start_x, self.start_y, event.x, event.y)
 
     def clear(self):
-        self.start_x, self.start_y = None, None  # Reset start coordinates
+        self.start_x, self.start_y = None, None
         self.canvas.delete(self.rect)
         self.draw_frame()
         self.bounding_boxes.pop(list(self.object_dict.keys())[self.current_object_index])
 
     def submit(self):
         if len(self.bounding_boxes) != 0 and len(self.bounding_boxes) > self.current_object_index:
-            #self.clear()
             self.draw_frame() 
             self.current_object_index += 1
 
             if self.current_object_index < len(self.object_dict):
                 next_object = list(self.object_dict.keys())[self.current_object_index]
                 self.label.config(text="Draw bounding box around: {}".format(next_object))
-                self.start_x, self.start_y = None, None  # Reset start coordinates
+                self.start_x, self.start_y = None, None
             else:
                 self.cap.release()
                 self.root.destroy()
-                print("Bounding boxes:", self.bounding_boxes)
         else:
             messagebox.showinfo("Information", "Please draw a bounding box before submitting.")
 
-
 if __name__ == "__main__":
-    video_path = "/Users/victor/Desktop/work/Masterarbeit/vids/new_analysis_deep_learning.mp4"  # Provide path to your video
-    object_dict = {"background": "b", "object1": "a", "object2": "c"}  # Example object dictionary
+    video_path = "/Volumes/VERBATIM_HD/NOR/same_object_30092020/1-converted.avi"
+    object_dict = {"background": "b", "object1": "a", "object2": "c"}
 
-    BoundingBoxGUI(video_path, object_dict)
+    gui = BoundingBoxGUI(video_path, object_dict)
+    bounding_boxes = gui.get_bounding_boxes()
+    print("Bounding boxes:", bounding_boxes)
+
+
