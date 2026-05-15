@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -88,12 +87,12 @@ class ExplorationPipeline:
         )
         self._learner = ActiveLearner(self._classifier)
         self.pred_video_hires: bool = False
-        self._reference_frame: Optional[np.ndarray] = None
-        self._reference_video: Optional[Path] = None
+        self._reference_frame: np.ndarray | None = None
+        self._reference_video: Path | None = None
         # Pre-verified boxes from GUI (str path → {obj_name → box}).
         # When populated, _localize_boxes uses these directly and skips ORB.
         self._per_video_boxes: dict[str, dict[str, tuple[int, int, int, int]]] = {}
-        self._head_class_names: Optional[list[str]] = None
+        self._head_class_names: list[str] | None = None
 
         # Auto-load persisted reference frame if present
         ref_jpg = config.project_dir / "reference_frame.jpg"
@@ -110,7 +109,7 @@ class ExplorationPipeline:
     def set_reference_frame(
         self,
         frame: np.ndarray,
-        video_path: Optional[Path] = None,
+        video_path: Path | None = None,
     ) -> None:
         """Set the frame on which bounding boxes were drawn.
 
@@ -173,7 +172,7 @@ class ExplorationPipeline:
 
     def initialize_classifier(
         self,
-        sample_frames: Optional[list[np.ndarray]] = None,
+        sample_frames: list[np.ndarray] | None = None,
     ) -> np.ndarray:
         """Embed a sample of frames and auto-label confident ones."""
         if sample_frames is None:
@@ -230,7 +229,7 @@ class ExplorationPipeline:
                 continue
 
             background = self._estimate_background(video_path)
-            precomputed: Optional[dict] = None
+            precomputed: dict | None = None
 
             if self._head_class_names is not None and self._classifier._head is not None:
                 # Multi-class trained head: prediction directly encodes object
@@ -421,7 +420,7 @@ class ExplorationPipeline:
 
         return np.concatenate(all_embeddings, axis=0), effective_fps
 
-    def _estimate_background(self, video_path: Path, n_frames: int = 30) -> Optional[np.ndarray]:
+    def _estimate_background(self, video_path: Path, n_frames: int = 30) -> np.ndarray | None:
         """Compute a median background from uniformly sampled frames.
 
         Since objects and arena floor are static, the median converges to the
@@ -453,8 +452,8 @@ class ExplorationPipeline:
         exploration_mask: np.ndarray,
         objects: list[ObjectConfig],
         localized_boxes: dict[str, tuple[int, int, int, int]],
-        background: Optional[np.ndarray] = None,
-        precomputed_labels: Optional[dict[str, np.ndarray]] = None,
+        background: np.ndarray | None = None,
+        precomputed_labels: dict[str, np.ndarray] | None = None,
     ) -> dict[str, np.ndarray]:
         """First pass: assign exploration labels per frame per object.
 
@@ -473,8 +472,9 @@ class ExplorationPipeline:
         skip, max_frame, step, _ = self._frame_range(video_path)
         reader = VideoReader(video_path)
 
-        frame_idx = 0
-        for _, frame in reader.iter_frames(start=skip, end=max_frame, step=step):
+        for frame_idx, (_, frame) in enumerate(
+            reader.iter_frames(start=skip, end=max_frame, step=step)
+        ):
             if frame_idx >= n:
                 break
             if bool(exploration_mask[frame_idx]):
@@ -484,7 +484,6 @@ class ExplorationPipeline:
                     nearest = self._nearest_object(frame, objects, localized_boxes, background)
                     if nearest:
                         labels[nearest][frame_idx] = 1
-            frame_idx += 1
 
         return labels
 
@@ -508,9 +507,9 @@ class ExplorationPipeline:
         n = max((len(arr) for arr in labels.values()), default=0)
 
         out_path = self.config.project_dir / "results" / "prediction_videos" / f"{video_path.stem}_predicted.mp4"
-        writer: Optional[cv2.VideoWriter] = None
+        writer: cv2.VideoWriter | None = None
 
-        _COLORS = [
+        colors = [
             (0, 255, 0),
             (255, 0, 255),
             (0, 255, 255),
@@ -542,7 +541,7 @@ class ExplorationPipeline:
                 if box is None:
                     continue
                 x1, y1, x2, y2 = box
-                color = _COLORS[j % len(_COLORS)]
+                color = colors[j % len(colors)]
 
                 if labels.get(name, np.zeros(1))[frame_idx]:
                     # Active exploration: colored fill + solid border + label
@@ -580,8 +579,8 @@ class ExplorationPipeline:
         frame: np.ndarray,
         objects: list[ObjectConfig],
         localized_boxes: dict[str, tuple[int, int, int, int]],
-        background: Optional[np.ndarray] = None,
-    ) -> Optional[str]:
+        background: np.ndarray | None = None,
+    ) -> str | None:
         """Find which object the mouse is closest to.
 
         When a median *background* is available, foreground detection via
@@ -609,14 +608,14 @@ class ExplorationPipeline:
             return objects[0].name if objects else None
 
         largest = max(contours, key=cv2.contourArea)
-        M = cv2.moments(largest)
-        if M["m00"] == 0:
+        moments = cv2.moments(largest)
+        if moments["m00"] == 0:
             return objects[0].name if objects else None
 
-        cx = int(M["m10"] / M["m00"])
-        cy = int(M["m01"] / M["m00"])
+        cx = int(moments["m10"] / moments["m00"])
+        cy = int(moments["m01"] / moments["m00"])
 
-        best_name: Optional[str] = None
+        best_name: str | None = None
         best_dist = float("inf")
         for obj in objects:
             box = localized_boxes.get(obj.name)
@@ -634,7 +633,7 @@ class ExplorationPipeline:
     def _track_animal(
         self,
         video_path: Path,
-        background: Optional[np.ndarray],
+        background: np.ndarray | None,
         effective_fps: float,
     ) -> pd.DataFrame:
         """Run background-subtraction centroid tracking over all analysis frames.
@@ -646,13 +645,14 @@ class ExplorationPipeline:
         reader = VideoReader(video_path)
 
         records: list[dict] = []
-        frame_idx = 0
 
-        for _, frame in reader.iter_frames(start=skip, end=max_frame, step=step):
+        for frame_idx, (_, frame) in enumerate(
+            reader.iter_frames(start=skip, end=max_frame, step=step)
+        ):
             time_s = frame_idx / effective_fps
 
-            cx: Optional[float] = None
-            cy_val: Optional[float] = None
+            cx: float | None = None
+            cy_val: float | None = None
 
             if background is not None:
                 diff = cv2.absdiff(frame, background)
@@ -665,10 +665,10 @@ class ExplorationPipeline:
                 contours = [c for c in contours if cv2.contourArea(c) > 200]
                 if contours:
                     largest = max(contours, key=cv2.contourArea)
-                    M = cv2.moments(largest)
-                    if M["m00"] > 0:
-                        cx = M["m10"] / M["m00"]
-                        cy_val = M["m01"] / M["m00"]
+                    moments = cv2.moments(largest)
+                    if moments["m00"] > 0:
+                        cx = moments["m10"] / moments["m00"]
+                        cy_val = moments["m01"] / moments["m00"]
 
             records.append({"frame": frame_idx, "time_s": time_s, "x": cx, "y": cy_val})
             frame_idx += 1
@@ -716,10 +716,10 @@ class ExplorationPipeline:
         ax.scatter([xs[-1]], [ys[-1]], color="red", s=60, zorder=4, label="End")
 
         # Object bounding boxes
-        _BOX_COLORS_PLOT = ["#00DCDC", "#DC00DC", "#28C828", "#DCA000", "#5050F0"]
+        box_colors_plot = ["#00DCDC", "#DC00DC", "#28C828", "#DCA000", "#5050F0"]
         for i, (name, box) in enumerate(localized_boxes.items()):
             x1, y1, x2, y2 = box
-            color = _BOX_COLORS_PLOT[i % len(_BOX_COLORS_PLOT)]
+            color = box_colors_plot[i % len(box_colors_plot)]
             ax.add_patch(
                 Rectangle(
                     (x1, y1),

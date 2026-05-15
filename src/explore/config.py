@@ -38,7 +38,6 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import yaml
 
@@ -57,7 +56,7 @@ class ObjectConfig:
     """
 
     name: str
-    bounding_box: Optional[tuple[int, int, int, int]] = None
+    bounding_box: tuple[int, int, int, int] | None = None
 
     def __post_init__(self) -> None:
         if not self.name.strip():
@@ -192,7 +191,7 @@ class ExperimentConfig:
     # ------------------------------------------------------------------
 
     def to_dict(self) -> dict:  # type: ignore[return]
-        def _bbox(bb: Optional[tuple[int, int, int, int]]) -> Optional[list[int]]:
+        def _bbox(bb: tuple[int, int, int, int] | None) -> list[int] | None:
             return list(bb) if bb is not None else None
 
         return {
@@ -220,7 +219,7 @@ class ExperimentConfig:
             },
         }
 
-    def save(self, path: Optional[Path] = None) -> Path:
+    def save(self, path: Path | None = None) -> Path:
         """Serialise to YAML.  Defaults to ``<project_dir>/config.yaml``."""
         out = path or (self.project_dir / "config.yaml")
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -229,7 +228,7 @@ class ExperimentConfig:
         return out
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ExperimentConfig":  # type: ignore[return]
+    def from_dict(cls, data: dict) -> ExperimentConfig:  # type: ignore[return]
         """Construct from a plain dict (e.g. loaded from YAML).
 
         Tolerates old-format YAMLs that carry a ``description`` field or a
@@ -281,7 +280,7 @@ class ExperimentConfig:
         )
 
     @classmethod
-    def from_yaml(cls, path: Path | str) -> "ExperimentConfig":
+    def from_yaml(cls, path: Path | str) -> ExperimentConfig:
         """Load from a YAML file."""
         with open(path) as fh:
             raw = yaml.safe_load(fh)

@@ -7,7 +7,6 @@ import pytest
 
 from explore.pipeline.analysis import BehaviorAnalyzer
 
-
 # ---------------------------------------------------------------------------
 # Static helpers
 # ---------------------------------------------------------------------------
@@ -194,5 +193,5 @@ def test_aggregate_multiple_animals():
 
 
 def test_aggregate_empty_raises():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="empty"):
         BehaviorAnalyzer.aggregate([])

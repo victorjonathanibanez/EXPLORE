@@ -7,8 +7,8 @@ the codebase never has to manage capture objects directly.
 from __future__ import annotations
 
 import logging
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, Optional
 
 import cv2
 import numpy as np
@@ -33,13 +33,13 @@ class VideoReader:
 
     def __init__(self, path: Path | str) -> None:
         self.path = Path(path)
-        self._cap: Optional[cv2.VideoCapture] = None
+        self._cap: cv2.VideoCapture | None = None
 
     # ------------------------------------------------------------------
     # Context manager
     # ------------------------------------------------------------------
 
-    def __enter__(self) -> "VideoReader":
+    def __enter__(self) -> VideoReader:
         self._open()
         return self
 
@@ -111,9 +111,9 @@ class VideoReader:
     def iter_frames(
         self,
         start: int = 0,
-        end: Optional[int] = None,
+        end: int | None = None,
         step: int = 1,
-        crop: Optional[tuple[int, int, int, int]] = None,
+        crop: tuple[int, int, int, int] | None = None,
     ) -> Generator[tuple[int, np.ndarray], None, None]:
         """Yield ``(frame_index, frame)`` tuples.
 

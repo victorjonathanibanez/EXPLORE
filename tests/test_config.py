@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 import yaml
 
@@ -11,10 +9,8 @@ from explore.config import (
     AnalysisConfig,
     BehaviorConfig,
     ExperimentConfig,
-    ModelConfig,
     ObjectConfig,
 )
-
 
 # ---------------------------------------------------------------------------
 # ObjectConfig
@@ -62,12 +58,12 @@ def test_behavior_config_valid():
 
 
 def test_behavior_config_empty_exploration_raises():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="exploration prompt"):
         BehaviorConfig(exploration_prompts=[], no_exploration_prompts=["x"])
 
 
 def test_behavior_config_empty_no_exploration_raises():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="no-exploration prompt"):
         BehaviorConfig(exploration_prompts=["x"], no_exploration_prompts=[])
 
 

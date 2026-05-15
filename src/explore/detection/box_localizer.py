@@ -14,7 +14,6 @@ import logging
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -216,7 +215,7 @@ class BoxLocalizer:
         k = min(n_candidates, len(pool))
         indices = random.sample(pool, k) if k > 0 else [0]
 
-        best: Optional[LocalizationResult] = None
+        best: LocalizationResult | None = None
         for idx in sorted(indices):
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
             ok, frame = cap.read()

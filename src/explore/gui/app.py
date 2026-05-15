@@ -15,7 +15,6 @@ import threading
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
-from typing import Optional
 
 import numpy as np
 
@@ -61,11 +60,11 @@ class ExploreApp:
         root.resizable(True, True)
 
         # Holds the most recent annotated detection frame (BGR ndarray or None)
-        self._detection_preview: Optional[np.ndarray] = None
+        self._detection_preview: np.ndarray | None = None
 
         # Cached pipeline — models (CLIP + DINO) are expensive to load; reuse
         # across detect/run calls by updating .config instead of re-instantiating.
-        self._pipeline: Optional[object] = None  # ExplorationPipeline | None
+        self._pipeline: object | None = None  # ExplorationPipeline | None
 
         self._build_ui()
 
@@ -362,7 +361,7 @@ class ExploreApp:
     def _apply_detection_results(
         self,
         objects: list[ObjectConfig],
-        annotated: Optional[np.ndarray],
+        annotated: np.ndarray | None,
     ) -> None:
         # Refresh name fields with auto-assigned names from detection
         for row_idx, obj in enumerate(objects):

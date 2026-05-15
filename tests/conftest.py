@@ -24,21 +24,21 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures"
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture()
+@pytest.fixture
 def random_bgr_frame() -> np.ndarray:
     """Single 150×150 BGR frame filled with random noise."""
     rng = np.random.default_rng(42)
     return rng.integers(0, 255, (150, 150, 3), dtype=np.uint8)
 
 
-@pytest.fixture()
+@pytest.fixture
 def random_bgr_frames() -> list[np.ndarray]:
     """20 synthetic BGR frames."""
     rng = np.random.default_rng(0)
     return [rng.integers(0, 255, (150, 150, 3), dtype=np.uint8) for _ in range(20)]
 
 
-@pytest.fixture()
+@pytest.fixture
 def random_embeddings() -> np.ndarray:
     """Synthetic L2-normalised CLIP embeddings, shape (20, 512)."""
     rng = np.random.default_rng(1)
@@ -47,7 +47,7 @@ def random_embeddings() -> np.ndarray:
     return emb
 
 
-@pytest.fixture()
+@pytest.fixture
 def binary_labels() -> np.ndarray:
     """10 positive + 10 negative labels, shape (20,)."""
     return np.array([1] * 10 + [0] * 10, dtype=np.int32)
@@ -58,7 +58,7 @@ def binary_labels() -> np.ndarray:
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_config(tmp_path: Path):
     """Minimal valid ExperimentConfig pointing to tmp_path."""
     from explore.config import (
@@ -98,7 +98,7 @@ def minimal_config(tmp_path: Path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_clip_classifier(random_embeddings):
     """CLIPClassifier with mocked backbone — no torch/open_clip required."""
     from explore.classification.clip_classifier import CLIPClassifier
@@ -132,7 +132,7 @@ def mock_clip_classifier(random_embeddings):
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_detector():
     """ObjectDetector whose detect() returns pre-canned results."""
     from explore.detection.object_detector import DetectionResult, ObjectDetector
@@ -160,7 +160,7 @@ def mock_detector():
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture()
+@pytest.fixture
 def fake_video_path(tmp_path: Path) -> Path:
     """Write a tiny 30-frame synthetic video and return its path."""
     import cv2

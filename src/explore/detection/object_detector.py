@@ -20,7 +20,6 @@ import logging
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -89,7 +88,7 @@ class ObjectDetector:
         model_id: str = "IDEA-Research/grounding-dino-base",
         box_threshold: float = 0.35,
         text_threshold: float = 0.25,
-        device: Optional[str] = None,
+        device: str | None = None,
     ) -> None:
         self.model_id = model_id
         self.box_threshold = box_threshold
@@ -168,7 +167,7 @@ class ObjectDetector:
 
             # Walk candidates highest-score-first; skip any that DINO labelled
             # as an animal.
-            chosen_box: Optional[tuple[int, int, int, int]] = None
+            chosen_box: tuple[int, int, int, int] | None = None
             chosen_score = -1.0
             for idx in scores.argsort(descending=True).tolist():
                 label = labels[idx] if idx < len(labels) else ""
@@ -326,7 +325,7 @@ class ObjectDetector:
             (80, 80, 240),   # blue
         ]
         out = frame.copy()
-        for i, (det, name) in enumerate(zip(detections, names)):
+        for i, (det, name) in enumerate(zip(detections, names, strict=False)):
             color = palette[i % len(palette)]
             x1, y1, x2, y2 = det.box
 

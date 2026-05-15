@@ -21,16 +21,26 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import contextlib
 import io
 import json
 import logging
 import random
 from pathlib import Path
-from typing import Optional
 
 import cv2
 import numpy as np
 from nicegui import run, ui
+
+from explore.config import (
+    AnalysisConfig,
+    BehaviorConfig,
+    ExperimentConfig,
+    ModelConfig,
+    ObjectConfig,
+)
+from explore.detection.box_localizer import BoxLocalizer
+from explore.pipeline.prediction import ExplorationPipeline
 
 _LOGO_PATH = Path(__file__).parents[1] / "assets" / "explore_logo.png"
 
@@ -63,16 +73,6 @@ def _load_logo_data_url(height_px: int = 80) -> str:
 
 _LOGO_DATA_URL = _load_logo_data_url(height_px=200)
 
-from explore.config import (
-    AnalysisConfig,
-    BehaviorConfig,
-    ExperimentConfig,
-    ModelConfig,
-    ObjectConfig,
-)
-from explore.detection.box_localizer import BoxLocalizer
-from explore.pipeline.prediction import ExplorationPipeline
-
 logger = logging.getLogger(__name__)
 
 _BOX_COLORS = ["#00DCDC", "#DC00DC", "#28C828", "#DCA000", "#5050F0"]
@@ -93,7 +93,7 @@ def _dist_to_box_edge(cx: float, cy: float, box: tuple) -> float:
 
 def _get_centroid(
     frame: np.ndarray, background: np.ndarray
-) -> Optional[tuple[int, int]]:
+) -> tuple[int, int] | None:
     diff = cv2.absdiff(frame, background)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)
@@ -104,21 +104,21 @@ def _get_centroid(
     contours = [c for c in contours if cv2.contourArea(c) > 200]
     if not contours:
         return None
-    M = cv2.moments(max(contours, key=cv2.contourArea))
-    if M["m00"] == 0:
+    moments = cv2.moments(max(contours, key=cv2.contourArea))
+    if moments["m00"] == 0:
         return None
-    return int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
+    return int(moments["m10"] / moments["m00"]), int(moments["m01"] / moments["m00"])
 
 
 def _make_thumbnail(
     frame: np.ndarray,
     boxes: dict[str, tuple],
-    highlight: Optional[str],
-    centroid: Optional[tuple[int, int]],
+    highlight: str | None,
+    centroid: tuple[int, int] | None,
     width: int = 160,
 ) -> str:
     """Return a JPEG data-URL thumbnail with box overlays and centroid dot."""
-    from PIL import Image as _PIL
+    from PIL import Image
     h, w = frame.shape[:2]
     scale = width / w
     thumb = cv2.resize(frame.copy(), (width, int(h * scale)))
@@ -136,11 +136,11 @@ def _make_thumbnail(
         cv2.circle(thumb, (int(centroid[0] * scale), int(centroid[1] * scale)), 4, (0, 0, 255), -1)
     rgb = cv2.cvtColor(thumb, cv2.COLOR_BGR2RGB)
     buf = io.BytesIO()
-    _PIL.fromarray(rgb).save(buf, format="JPEG", quality=75)
+    Image.fromarray(rgb).save(buf, format="JPEG", quality=75)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def _quick_background(video_path: Path, n: int = 15, skip_s: float = 30.0) -> Optional[np.ndarray]:
+def _quick_background(video_path: Path, n: int = 15, skip_s: float = 30.0) -> np.ndarray | None:
     cap = cv2.VideoCapture(str(video_path))
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps_v = cap.get(cv2.CAP_PROP_FPS) or 25.0
@@ -261,7 +261,7 @@ def _predict_label_window(
     labels = [head_class_names[int(i)] for i in indices]
 
     results = []
-    for f, t, lbl in zip(raw_frames, timestamps, labels):
+    for f, t, lbl in zip(raw_frames, timestamps, labels, strict=False):
         hl = lbl if lbl != _NOT_EXP else None
         results.append({
             "frame": f,
@@ -361,9 +361,9 @@ _DEFAULT_NO_EXPLORATION = [
 # ---------------------------------------------------------------------------
 
 
-def _infer_duration_minutes(video_paths: list[str]) -> Optional[int]:
+def _infer_duration_minutes(video_paths: list[str]) -> int | None:
     """Return the floor-minutes of the shortest video, or None if unreadable."""
-    min_s: Optional[float] = None
+    min_s: float | None = None
     for p in video_paths:
         cap = cv2.VideoCapture(p)
         frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -387,7 +387,7 @@ def _bgr_to_data_url(frame: np.ndarray) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def _random_frame(video_path: Path, skip_s: float = 60.0) -> Optional[np.ndarray]:
+def _random_frame(video_path: Path, skip_s: float = 60.0) -> np.ndarray | None:
     """Return a random BGR frame from the middle of *video_path*."""
     cap = cv2.VideoCapture(str(video_path))
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -450,15 +450,15 @@ class ExploreApp:
 
         # --- Labeling state ---
         self.reference_video_idx: int = 0
-        self.reference_frame: Optional[np.ndarray] = None
+        self.reference_frame: np.ndarray | None = None
         self.reference_frame_url: str = ""
         self.objects: list[dict] = []          # [{name, box: (x1,y1,x2,y2)}]
 
         # --- Box-drawing state ---
         self._drawing: bool = False
-        self._draw_start: Optional[tuple[float, float]] = None
-        self._draw_current: Optional[tuple[float, float]] = None
-        self._pending_box: Optional[tuple[int, int, int, int]] = None
+        self._draw_start: tuple[float, float] | None = None
+        self._draw_current: tuple[float, float] | None = None
+        self._pending_box: tuple[int, int, int, int] | None = None
 
         # --- Per-video localized boxes ---
         # {video_path_str: {obj_name: (x1,y1,x2,y2)}}
@@ -479,33 +479,33 @@ class ExploreApp:
 
         # --- Labeling / training loop (Tab 4) ---
         self._label_window_video: str = ""
-        self._manual_start_s: Optional[float] = None   # None = random
-        self._current_window: Optional[dict] = None    # window being shown/edited
+        self._manual_start_s: float | None = None   # None = random
+        self._current_window: dict | None = None    # window being shown/edited
         self._training_pool: list[dict] = []           # past windows saved to pool
         self._head_classes: list[str] = []
         self._head_trained: bool = False
         self._trained_clf = None
 
         # --- Pipeline ---
-        self._pipeline: Optional[ExplorationPipeline] = None
+        self._pipeline: ExplorationPipeline | None = None
 
         # --- UI refs (set during build) ---
-        self._img: Optional[ui.interactive_image] = None
-        self._name_dialog: Optional[ui.dialog] = None
-        self._name_input: Optional[ui.input] = None
-        self._objects_panel_refresh: Optional[callable] = None
-        self._verify_container: Optional[ui.column] = None
-        self._current_window_refresh: Optional[callable] = None
-        self._label_video_select_refresh: Optional[callable] = None
-        self._sample_status: Optional[ui.label] = None
-        self._train_status: Optional[ui.label] = None
-        self._di_ri_refresh: Optional[callable] = None
-        self._log: Optional[ui.log] = None
-        self._progress: Optional[ui.linear_progress] = None
-        self._run_btn: Optional[ui.button] = None
-        self._results_container: Optional[ui.column] = None
-        self._video_list_refresh: Optional[callable] = None
-        self._tabs: Optional[ui.tabs] = None
+        self._img: ui.interactive_image | None = None
+        self._name_dialog: ui.dialog | None = None
+        self._name_input: ui.input | None = None
+        self._objects_panel_refresh: callable | None = None
+        self._verify_container: ui.column | None = None
+        self._current_window_refresh: callable | None = None
+        self._label_video_select_refresh: callable | None = None
+        self._sample_status: ui.label | None = None
+        self._train_status: ui.label | None = None
+        self._di_ri_refresh: callable | None = None
+        self._log: ui.log | None = None
+        self._progress: ui.linear_progress | None = None
+        self._run_btn: ui.button | None = None
+        self._results_container: ui.column | None = None
+        self._video_list_refresh: callable | None = None
+        self._tabs: ui.tabs | None = None
 
     # ------------------------------------------------------------------
     # UI build
@@ -646,7 +646,7 @@ class ExploreApp:
 
     def _build_objects_tab(self, tabs: ui.tabs, next_tab: ui.tab) -> None:
         with ui.splitter(value=68).classes("w-full h-full") as splitter:
-            with splitter.before:
+            with splitter.before:  # noqa: SIM117
                 with ui.column().classes("w-full h-full p-3 gap-2"):
                     with ui.row().classes("w-full items-center gap-2"):
                         ui.label("Reference video:").classes("text-sm text-gray-600")
@@ -676,7 +676,7 @@ class ExploreApp:
 
                     self._ref_sel = ref_sel
 
-            with splitter.after:
+            with splitter.after:  # noqa: SIM117
                 with ui.column().classes("w-full h-full p-4 gap-3"):
                     ui.label("Objects").classes("text-base font-semibold")
                     ui.label(
@@ -761,7 +761,7 @@ class ExploreApp:
             ).classes("text-sm text-gray-500")
 
             # ── Sampling controls ────────────────────────────────────────
-            with ui.card().classes("w-full p-3 gap-2"):
+            with ui.card().classes("w-full p-3 gap-2"):  # noqa: SIM117
                 with ui.row().classes("gap-3 items-end flex-wrap"):
                     with ui.column().classes("gap-1"):
                         ui.label("Video").classes("text-xs text-gray-500")
@@ -832,7 +832,7 @@ class ExploreApp:
                     ).classes("w-full")
 
                     # Scrollable frame strip with editable labels
-                    with ui.element("div").style(
+                    with ui.element("div").style(  # noqa: SIM117
                         "overflow-x:auto; overflow-y:hidden; width:100%;"
                         "border:1px solid #e5e7eb; border-radius:6px; background:#f9fafb;"
                     ):
@@ -846,11 +846,10 @@ class ExploreApp:
                                         "width:88px; height:66px;"
                                         "object-fit:cover; border-radius:3px;"
                                     ).classes("cursor-zoom-in")
-                                    with img:
-                                        with ui.tooltip().classes(
-                                            "bg-transparent shadow-none p-0"
-                                        ):
-                                            ui.image(frame_d["thumb_lg"]).style(
+                                    with img, ui.tooltip().classes(
+                                        "bg-transparent shadow-none p-0"
+                                    ):
+                                        ui.image(frame_d["thumb_lg"]).style(
                                                 "width:400px; height:auto;"
                                                 "border-radius:6px;"
                                                 "box-shadow:0 4px 20px rgba(0,0,0,0.4);"
@@ -946,12 +945,11 @@ class ExploreApp:
                 "text-sm px-3 py-2 rounded border bg-gray-50 text-gray-700"
             )
 
-            with ui.row().classes("gap-6 mt-1"):
-                with ui.column().classes("gap-1"):
-                    ui.label("Min exploration bout (s)").classes("text-sm text-gray-600")
-                    ui.number(min=0, max=10, step=0.5).bind_value(
-                        self, "min_bout_seconds"
-                    ).classes("w-28")
+            with ui.row().classes("gap-6 mt-1"), ui.column().classes("gap-1"):
+                ui.label("Min exploration bout (s)").classes("text-sm text-gray-600")
+                ui.number(min=0, max=10, step=0.5).bind_value(
+                    self, "min_bout_seconds"
+                ).classes("w-28")
 
             @ui.refreshable
             def di_ri_options() -> None:
@@ -1226,7 +1224,7 @@ class ExploreApp:
     # ------------------------------------------------------------------
 
     @property
-    def _session_path(self) -> Optional[Path]:
+    def _session_path(self) -> Path | None:
         if not self.project_name.strip() or not self.project_path.strip():
             return None
         return Path(self.project_path) / self.project_name / "session.json"
@@ -1282,10 +1280,8 @@ class ExploreApp:
         if self._trained_clf is not None and self._head_trained:
             head_path = path.parent / "model" / "head.pkl"
             head_path.parent.mkdir(parents=True, exist_ok=True)
-            try:
+            with contextlib.suppress(Exception):
                 self._trained_clf.save_head(head_path)
-            except Exception:
-                pass
 
         logger.info("Session saved to '%s'.", path)
 
@@ -1405,10 +1401,9 @@ class ExploreApp:
             return
         container.clear()
 
-        with container:
-            with ui.row().classes("items-center gap-3"):
-                ui.spinner("dots", size="md")
-                ui.label("Running ORB localization…").classes("text-sm text-gray-500")
+        with container, ui.row().classes("items-center gap-3"):
+            ui.spinner("dots", size="md")
+            ui.label("Running ORB localization…").classes("text-sm text-gray-500")
 
         ref_frame = self.reference_frame
         ref_video = Path(self.video_paths[self.reference_video_idx])
@@ -1925,17 +1920,15 @@ class ExploreApp:
 class _NiceGuiLogHandler(logging.Handler):
     """Forward Python log records to a ``ui.log`` widget."""
 
-    def __init__(self, log_widget: Optional[ui.log]) -> None:
+    def __init__(self, log_widget: ui.log | None) -> None:
         super().__init__()
         self._widget = log_widget
 
     def emit(self, record: logging.LogRecord) -> None:
         if self._widget is None:
             return
-        try:
+        with contextlib.suppress(Exception):
             self._widget.push(self.format(record))
-        except Exception:
-            pass
 
 
 # ---------------------------------------------------------------------------

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import messagebox, ttk
-from typing import Optional
 
 from explore.config import BehaviorConfig
 
@@ -35,7 +34,7 @@ class BehaviorSetupDialog:
         self,
         parent: tk.Tk | tk.Toplevel,
         behavior: BehaviorConfig,
-        on_confirm: Optional[callable] = None,  # type: ignore[type-arg]
+        on_confirm: callable | None = None,  # type: ignore[type-arg]
     ) -> None:
         self.parent = parent
         self.behavior = behavior
@@ -107,8 +106,8 @@ class BehaviorSetupDialog:
     # ------------------------------------------------------------------
 
     def _confirm(self) -> None:
-        pos = [l.strip() for l in self._pos_text.get("1.0", "end").splitlines() if l.strip()]
-        neg = [l.strip() for l in self._neg_text.get("1.0", "end").splitlines() if l.strip()]
+        pos = [line.strip() for line in self._pos_text.get("1.0", "end").splitlines() if line.strip()]
+        neg = [line.strip() for line in self._neg_text.get("1.0", "end").splitlines() if line.strip()]
 
         if not pos or not neg:
             messagebox.showerror(

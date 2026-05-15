@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import messagebox, ttk
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -47,7 +46,7 @@ class ObjectSetupDialog:
         parent: tk.Tk | tk.Toplevel,
         reference_frame: np.ndarray,
         objects: list[ObjectConfig],
-        on_confirm: Optional[callable] = None,  # type: ignore[type-arg]
+        on_confirm: callable | None = None,  # type: ignore[type-arg]
     ) -> None:
         self.parent = parent
         self.reference_frame = reference_frame
@@ -55,8 +54,8 @@ class ObjectSetupDialog:
         self.on_confirm = on_confirm
 
         self._scale = 1.0
-        self._photo: Optional[ImageTk.PhotoImage] = None
-        self._drag_state: Optional[dict] = None  # type: ignore[type-arg]
+        self._photo: ImageTk.PhotoImage | None = None
+        self._drag_state: dict | None = None  # type: ignore[type-arg]
 
         self.window = tk.Toplevel(parent)
         self.window.title("EXPLORE 2.0 — Define Objects")
@@ -156,7 +155,7 @@ class ObjectSetupDialog:
             messagebox.showerror("Detection failed", str(exc))
             return
 
-        for obj, result in zip(self.objects, results):
+        for obj, result in zip(self.objects, results, strict=False):
             obj.bounding_box = result.box
 
         self._redraw()
@@ -229,12 +228,11 @@ class ObjectSetupDialog:
             obj.name = self._name_vars[i].get().strip()
             obj.description = self._desc_vars[i].get().strip()
 
-        if any(o.bounding_box is None for o in self.objects):
-            if not messagebox.askokcancel(
-                "Missing bounding boxes",
-                "Some objects have no bounding box detected. Continue anyway?",
-            ):
-                return
+        if any(o.bounding_box is None for o in self.objects) and not messagebox.askokcancel(
+            "Missing bounding boxes",
+            "Some objects have no bounding box detected. Continue anyway?",
+        ):
+            return
 
         self.window.destroy()
         if self.on_confirm:

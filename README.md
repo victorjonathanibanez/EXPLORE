@@ -69,41 +69,6 @@ The browser app opens automatically. Work through the six tabs in order:
 Session state is saved automatically at each step — use **Load project** on Tab 1
 to resume from where you left off.
 
----
-
-### Python API
-
-```python
-from explore import ExperimentConfig, ExplorationPipeline
-from explore.config import AnalysisConfig, BehaviorConfig, ModelConfig, ObjectConfig
-
-cfg = ExperimentConfig(
-    project_name="NOR_cohort_A",
-    project_path="/data/experiments",
-    video_paths=["/data/videos/animal_01.mp4"],
-    video_duration_minutes=5,
-    objects=[
-        ObjectConfig(name="familiar", bounding_box=(120, 80, 320, 280)),
-        ObjectConfig(name="novel",    bounding_box=(600, 80, 800, 280)),
-    ],
-    behavior=BehaviorConfig(
-        exploration_prompts=[
-            "a mouse actively sniffing and investigating an object",
-            "a rodent with nose close to an object, exploring it",
-        ],
-        no_exploration_prompts=[
-            "a mouse walking away from or ignoring objects",
-            "a rodent resting or grooming away from objects",
-        ],
-    ),
-    model=ModelConfig(),
-    analysis=AnalysisConfig(compute_di=True),
-)
-
-pipeline = ExplorationPipeline(cfg, headless=True)
-results = pipeline.run()
-print(results)
-```
 
 ---
 

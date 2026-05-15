@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import numpy as np
 import pandas as pd
 import pytest
 
 from explore.utils.io import save_results
 from explore.utils.video import VideoReader
-
 
 # ---------------------------------------------------------------------------
 # VideoReader

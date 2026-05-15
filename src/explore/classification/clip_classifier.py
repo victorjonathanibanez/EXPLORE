@@ -32,7 +32,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 import joblib
 import numpy as np
@@ -65,7 +64,7 @@ class CLIPClassifier:
         self,
         model_name: str = "ViT-B-32",
         pretrained: str = "openai",
-        device: Optional[str] = None,
+        device: str | None = None,
         batch_size: int = 64,
     ) -> None:
         self.model_name = model_name
@@ -195,7 +194,7 @@ class CLIPClassifier:
         self,
         embeddings: np.ndarray,
         labels: np.ndarray,
-        C: float = 1.0,
+        c: float = 1.0,
     ) -> None:
         """Fit a logistic-regression head on labeled frame embeddings.
 
@@ -206,7 +205,7 @@ class CLIPClassifier:
             :class:`~explore.classification.active_learning.ActiveLearner`.
         labels:
             Binary array of shape ``(N,)``: ``1`` = exploration, ``0`` = not.
-        C:
+        c:
             Inverse regularisation strength (default 1.0).
         """
         from sklearn.linear_model import LogisticRegression
@@ -217,7 +216,7 @@ class CLIPClassifier:
             )
 
         self._head = LogisticRegression(
-            C=C,
+            C=c,
             max_iter=1000,
             solver="lbfgs",
             class_weight="balanced",

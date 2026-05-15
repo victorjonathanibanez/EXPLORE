@@ -12,7 +12,6 @@ import pytest
 from explore.classification.active_learning import ActiveLearner
 from explore.classification.clip_classifier import CLIPClassifier
 
-
 # ---------------------------------------------------------------------------
 # CLIPClassifier — zero-shot
 # ---------------------------------------------------------------------------
@@ -73,7 +72,8 @@ def test_fit_and_predict_proba(mock_clip_classifier, random_embeddings, binary_l
     probas = mock_clip_classifier.predict_proba(random_embeddings)
 
     assert probas.shape == (len(random_embeddings),)
-    assert np.all(probas >= 0) and np.all(probas <= 1)
+    assert np.all(probas >= 0)
+    assert np.all(probas <= 1)
 
 
 def test_predict_proba_raises_without_head(random_embeddings):
@@ -109,7 +109,6 @@ def test_save_load_head(tmp_path, mock_clip_classifier, random_embeddings, binar
     mock_clip_classifier.save_head(head_path)
 
     # Clear and reload
-    original_head = mock_clip_classifier._head
     mock_clip_classifier._head = None
     mock_clip_classifier.load_head(head_path)
 

@@ -7,7 +7,6 @@ import pytest
 
 from explore.detection.object_detector import DetectionResult, ObjectDetector
 
-
 # ---------------------------------------------------------------------------
 # DetectionResult
 # ---------------------------------------------------------------------------

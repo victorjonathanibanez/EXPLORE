@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Optional
 
 import numpy as np
 from PIL import Image, ImageTk
@@ -48,7 +47,7 @@ class ReviewDialog:
         frames: list[np.ndarray],
         frame_indices: list[int],
         probas: list[float],
-        on_done: Optional[callable] = None,  # type: ignore[type-arg]
+        on_done: callable | None = None,  # type: ignore[type-arg]
     ) -> None:
         if not frames:
             raise ValueError("frames must not be empty")
@@ -60,7 +59,7 @@ class ReviewDialog:
 
         self.corrections: dict[int, int] = {}
         self._current = 0
-        self._photo: Optional[ImageTk.PhotoImage] = None
+        self._photo: ImageTk.PhotoImage | None = None
 
         self.window = tk.Toplevel(parent)
         self.window.title("EXPLORE 2.0 — Review Uncertain Frames")

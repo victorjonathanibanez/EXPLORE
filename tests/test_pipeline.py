@@ -8,7 +8,6 @@ import numpy as np
 
 from explore.pipeline.prediction import ExplorationPipeline
 
-
 # ---------------------------------------------------------------------------
 # Pipeline construction
 # ---------------------------------------------------------------------------
@@ -51,7 +50,6 @@ def test_nearest_object_no_contours_returns_first(minimal_config):
 def test_assign_labels_precomputed_returns_copy(minimal_config):
     """When precomputed_labels are supplied, _assign_labels returns a copy."""
     pipeline = ExplorationPipeline(minimal_config, headless=True)
-    n = 5
     precomputed = {
         "familiar": np.array([1, 0, 1, 0, 0], dtype=np.int32),
         "novel": np.array([0, 0, 0, 1, 0], dtype=np.int32),
@@ -88,9 +86,9 @@ def test_assign_labels_no_bboxes(minimal_config, fake_video_path):
         return_value=(0, n, 1, 4.0),
     ), patch(
         "explore.pipeline.prediction.VideoReader",
-    ) as MockReader:
+    ) as mock_reader:
         frames = [np.zeros((150, 150, 3), dtype=np.uint8) for _ in range(n)]
-        MockReader.return_value.iter_frames.return_value = enumerate(frames)
+        mock_reader.return_value.iter_frames.return_value = enumerate(frames)
         labels = pipeline._assign_labels(
             fake_video_path, mask, objs_no_bbox, localized_boxes={}
         )
