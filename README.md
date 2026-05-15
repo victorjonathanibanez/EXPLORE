@@ -16,8 +16,7 @@
 
 EXPLORE analyzes rodent object exploration from overhead video recordings.
 It uses CLIP (ViT-B/32) to classify frames and a lightweight logistic-regression
-head that you train interactively in a few minutes — no GPU, no manual frame
-labeling spreadsheet.
+head that you train interactively in a few minutes.
 
 **Core workflow (browser GUI):**
 
@@ -99,24 +98,6 @@ instability from empty time bins.
 
 ---
 
-## How the classifier works
-
-1. **Zero-shot baseline** — CLIP text prompts score every frame without any
-   labeled data. This is the starting point if you skip Tab 4.
-2. **Iterative fine-tuning** — Tab 4 samples 1-minute windows at ~4 fps.
-   Proximity to each object's bounding box provides initial labels. You correct
-   any mistakes, then click *Train + Preview*: a logistic-regression head is
-   fitted on CLIP embeddings of all saved windows, and the next window is
-   immediately predicted by the new model. Each round adds ~240 frames to the
-   training pool. Typically 3–5 rounds (~15 minutes) are sufficient.
-3. **Balanced training** — The logistic-regression head uses
-   `class_weight="balanced"` to handle the natural skew toward
-   *not exploring* frames.
-4. **Analysis** — `pipeline.run()` embeds all frames at 4 fps and classifies
-   them with the trained head (or zero-shot if no head was fitted).
-
----
-
 
 ## Development
 
@@ -141,7 +122,6 @@ ruff format src/ tests/
 
 Pull requests welcome. Areas where contributions are most valuable:
 
-- New behavioral templates (validated on published datasets)
 - Pose estimation integration for more robust tracking
 - Better object assignment when multiple objects are very close together
 - Windows-specific testing
