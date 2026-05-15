@@ -40,6 +40,7 @@ def test_zero_shot_predict_sums_to_one_with_complement(
     mock_clip_classifier, random_embeddings
 ):
     """pos_score + neg_score softmax should sum to 1 per frame."""
+
     # Use the same text for both so scores are equal → proba ≈ 0.5
     def _embed_texts_equal(texts):
         # Return identical embedding regardless of text
@@ -98,11 +99,19 @@ def test_fit_single_class_raises(mock_clip_classifier, random_embeddings):
 # ---------------------------------------------------------------------------
 
 
-def test_save_load_head(tmp_path, mock_clip_classifier, random_embeddings, binary_labels):
+def test_save_load_head(
+    tmp_path, mock_clip_classifier, random_embeddings, binary_labels
+):
     mock_clip_classifier.fit = CLIPClassifier.fit.__get__(mock_clip_classifier)
-    mock_clip_classifier.save_head = CLIPClassifier.save_head.__get__(mock_clip_classifier)
-    mock_clip_classifier.load_head = CLIPClassifier.load_head.__get__(mock_clip_classifier)
-    mock_clip_classifier.predict_proba = CLIPClassifier.predict_proba.__get__(mock_clip_classifier)
+    mock_clip_classifier.save_head = CLIPClassifier.save_head.__get__(
+        mock_clip_classifier
+    )
+    mock_clip_classifier.load_head = CLIPClassifier.load_head.__get__(
+        mock_clip_classifier
+    )
+    mock_clip_classifier.predict_proba = CLIPClassifier.predict_proba.__get__(
+        mock_clip_classifier
+    )
 
     mock_clip_classifier.fit(random_embeddings, binary_labels)
     head_path = tmp_path / "head.pkl"
@@ -117,7 +126,9 @@ def test_save_load_head(tmp_path, mock_clip_classifier, random_embeddings, binar
 
 
 def test_save_head_without_fit_raises(mock_clip_classifier, tmp_path):
-    mock_clip_classifier.save_head = CLIPClassifier.save_head.__get__(mock_clip_classifier)
+    mock_clip_classifier.save_head = CLIPClassifier.save_head.__get__(
+        mock_clip_classifier
+    )
     with pytest.raises(RuntimeError, match="No head"):
         mock_clip_classifier.save_head(tmp_path / "head.pkl")
 

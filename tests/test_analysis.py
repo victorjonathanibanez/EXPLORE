@@ -113,7 +113,9 @@ def test_count_bouts_all_ones():
 
 def test_compute_basic(tmp_path):
     fps = 25.0
-    analyzer = BehaviorAnalyzer(fps=fps, bin_duration_seconds=60.0, min_bout_seconds=0.0)
+    analyzer = BehaviorAnalyzer(
+        fps=fps, bin_duration_seconds=60.0, min_bout_seconds=0.0
+    )
 
     # Simulate 90 s of data: first 30 s exploring object1, rest not
     n_frames = int(90 * fps)
@@ -126,7 +128,10 @@ def test_compute_basic(tmp_path):
     assert "obj1_time_s" in df.columns
     assert "obj2_time_s" in df.columns
     # First bin (0-60s): all 30 s of exploration is in bin 1
-    assert pytest.approx(df.loc[df["minute"] == 1.0, "obj1_time_s"].values[0], abs=1) == 30.0
+    assert (
+        pytest.approx(df.loc[df["minute"] == 1.0, "obj1_time_s"].values[0], abs=1)
+        == 30.0
+    )
 
 
 def test_compute_empty_raises():
@@ -137,7 +142,9 @@ def test_compute_empty_raises():
 
 def test_compute_adds_experiment_column():
     fps = 10.0
-    analyzer = BehaviorAnalyzer(fps=fps, bin_duration_seconds=10.0, min_bout_seconds=0.0)
+    analyzer = BehaviorAnalyzer(
+        fps=fps, bin_duration_seconds=10.0, min_bout_seconds=0.0
+    )
     obj = np.zeros(50, dtype=np.int32)
     df = analyzer.compute({"obj": obj}, animal_id="a1", experiment_id="exp01")
     assert (df["experiment"] == "exp01").all()
@@ -150,15 +157,19 @@ def test_compute_adds_experiment_column():
 
 def test_add_di_ri_columns():
     fps = 25.0
-    analyzer = BehaviorAnalyzer(fps=fps, bin_duration_seconds=60.0, min_bout_seconds=0.0)
+    analyzer = BehaviorAnalyzer(
+        fps=fps, bin_duration_seconds=60.0, min_bout_seconds=0.0
+    )
     n = int(120 * fps)
     novel = np.zeros(n, dtype=np.int32)
     novel[: int(30 * fps)] = 1
     familiar = np.zeros(n, dtype=np.int32)
-    familiar[int(30 * fps): int(40 * fps)] = 1
+    familiar[int(30 * fps) : int(40 * fps)] = 1
 
     df = analyzer.compute({"novel": novel, "familiar": familiar}, animal_id="a1")
-    df = analyzer.add_di_ri(df, novel_col="novel_time_s", familiar_col="familiar_time_s")
+    df = analyzer.add_di_ri(
+        df, novel_col="novel_time_s", familiar_col="familiar_time_s"
+    )
 
     assert "DI" in df.columns
     assert "RI" in df.columns
@@ -181,7 +192,9 @@ def test_add_di_ri_missing_column_raises():
 
 def test_aggregate_multiple_animals():
     fps = 10.0
-    analyzer = BehaviorAnalyzer(fps=fps, bin_duration_seconds=10.0, min_bout_seconds=0.0)
+    analyzer = BehaviorAnalyzer(
+        fps=fps, bin_duration_seconds=10.0, min_bout_seconds=0.0
+    )
     obj = np.zeros(50, dtype=np.int32)
 
     df1 = analyzer.compute({"obj": obj}, animal_id="a1")

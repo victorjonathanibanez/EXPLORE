@@ -195,7 +195,9 @@ class ExplorationPipeline:
 
     def get_uncertain_frames(self, probas: np.ndarray) -> np.ndarray:
         """Return frame indices to show the user for correction."""
-        return self._learner.query(probas, already_labeled=set(self._learner.labeled_indices))
+        return self._learner.query(
+            probas, already_labeled=set(self._learner.labeled_indices)
+        )
 
     def update_with_corrections(
         self,
@@ -231,10 +233,16 @@ class ExplorationPipeline:
             background = self._estimate_background(video_path)
             precomputed: dict | None = None
 
-            if self._head_class_names is not None and self._classifier._head is not None:
+            if (
+                self._head_class_names is not None
+                and self._classifier._head is not None
+            ):
                 # Multi-class trained head: prediction directly encodes object
                 class_indices = self._classifier.predict_class_indices(embeddings)
-                precomputed = {o.name: np.zeros(len(embeddings), dtype=np.int32) for o in cfg.objects}
+                precomputed = {
+                    o.name: np.zeros(len(embeddings), dtype=np.int32)
+                    for o in cfg.objects
+                }
                 for i, ci in enumerate(class_indices):
                     cls = self._head_class_names[ci]
                     if cls in precomputed:
@@ -281,14 +289,22 @@ class ExplorationPipeline:
 
             # Apply bout filter so video and CSV are consistent
             min_bout_frames = int(cfg.behavior.min_bout_seconds * effective_fps)
-            object_labels = {name: _filter_bouts(arr, min_bout_frames) for name, arr in raw_labels.items()}
+            object_labels = {
+                name: _filter_bouts(arr, min_bout_frames)
+                for name, arr in raw_labels.items()
+            }
 
             # Pass 3: write annotated video with filtered labels
             self._write_prediction_video(video_path, object_labels, cfg.objects, boxes)
 
             # Pass 4: track animal position and save CSV + trajectory plot
             tracking_df = self._track_animal(video_path, background, effective_fps)
-            tracking_csv = cfg.project_dir / "results" / "tracking" / f"{video_path.stem}_tracking.csv"
+            tracking_csv = (
+                cfg.project_dir
+                / "results"
+                / "tracking"
+                / f"{video_path.stem}_tracking.csv"
+            )
             tracking_df.to_csv(tracking_csv, index=False)
             logger.info("Tracking CSV saved to '%s'.", tracking_csv)
             self._save_trajectory_plot(tracking_df, boxes, video_path)
@@ -359,7 +375,9 @@ class ExplorationPipeline:
 
         objects = self.config.objects
         original: dict[str, tuple[int, int, int, int]] = {
-            o.name: o.bounding_box for o in objects if o.bounding_box is not None  # type: ignore[misc]
+            o.name: o.bounding_box
+            for o in objects
+            if o.bounding_box is not None  # type: ignore[misc]
         }
 
         # 2. Reference video or no reference frame → use drawn boxes as-is
@@ -409,18 +427,24 @@ class ExplorationPipeline:
         for _, frame in reader.iter_frames(start=skip, end=max_frame, step=step):
             batch.append(frame)
             if len(batch) >= _EMBED_BATCH:
-                all_embeddings.append(self._classifier.embed_frames(batch, show_progress=False))
+                all_embeddings.append(
+                    self._classifier.embed_frames(batch, show_progress=False)
+                )
                 batch = []
 
         if batch:
-            all_embeddings.append(self._classifier.embed_frames(batch, show_progress=False))
+            all_embeddings.append(
+                self._classifier.embed_frames(batch, show_progress=False)
+            )
 
         if not all_embeddings:
             return np.empty((0, 512), dtype=np.float32), effective_fps
 
         return np.concatenate(all_embeddings, axis=0), effective_fps
 
-    def _estimate_background(self, video_path: Path, n_frames: int = 30) -> np.ndarray | None:
+    def _estimate_background(
+        self, video_path: Path, n_frames: int = 30
+    ) -> np.ndarray | None:
         """Compute a median background from uniformly sampled frames.
 
         Since objects and arena floor are static, the median converges to the
@@ -481,7 +505,9 @@ class ExplorationPipeline:
                 if no_bboxes:
                     labels[objects[0].name][frame_idx] = 1
                 else:
-                    nearest = self._nearest_object(frame, objects, localized_boxes, background)
+                    nearest = self._nearest_object(
+                        frame, objects, localized_boxes, background
+                    )
                     if nearest:
                         labels[nearest][frame_idx] = 1
 
@@ -506,7 +532,12 @@ class ExplorationPipeline:
 
         n = max((len(arr) for arr in labels.values()), default=0)
 
-        out_path = self.config.project_dir / "results" / "prediction_videos" / f"{video_path.stem}_predicted.mp4"
+        out_path = (
+            self.config.project_dir
+            / "results"
+            / "prediction_videos"
+            / f"{video_path.stem}_predicted.mp4"
+        )
         writer: cv2.VideoWriter | None = None
 
         colors = [
@@ -533,7 +564,9 @@ class ExplorationPipeline:
                 writer = cv2.VideoWriter(str(out_path), fourcc, out_fps, (out_w, out_h))
                 if not writer.isOpened():
                     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    writer = cv2.VideoWriter(str(out_path), fourcc, out_fps, (out_w, out_h))
+                    writer = cv2.VideoWriter(
+                        str(out_path), fourcc, out_fps, (out_w, out_h)
+                    )
 
             out_frame = frame.copy()
             for j, name in enumerate(obj_names):
@@ -562,7 +595,9 @@ class ExplorationPipeline:
                     # Not exploring: dim grey outline only
                     cv2.rectangle(out_frame, (x1, y1), (x2, y2), (120, 120, 120), 1)
 
-            out_frame = cv2.resize(out_frame, (out_w, out_h), interpolation=cv2.INTER_AREA)
+            out_frame = cv2.resize(
+                out_frame, (out_w, out_h), interpolation=cv2.INTER_AREA
+            )
             for _ in range(repeat):
                 writer.write(out_frame)
 
@@ -600,7 +635,9 @@ class ExplorationPipeline:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             _, thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
 
-        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(
+            thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
         # Discard tiny blobs (noise); keep only meaningful foreground regions
         contours = [c for c in contours if cv2.contourArea(c) > 200]
 
@@ -661,7 +698,9 @@ class ExplorationPipeline:
                 k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
                 thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, k)
                 thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, k)
-                contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                contours, _ = cv2.findContours(
+                    thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+                )
                 contours = [c for c in contours if cv2.contourArea(c) > 200]
                 if contours:
                     largest = max(contours, key=cv2.contourArea)
@@ -682,14 +721,29 @@ class ExplorationPipeline:
         video_path: Path,
     ) -> None:
         """Save a trajectory plot colour-coded by time with object boxes overlaid."""
-        out_path = self.config.project_dir / "results" / "tracking" / f"{video_path.stem}_trajectory.png"
+        out_path = (
+            self.config.project_dir
+            / "results"
+            / "tracking"
+            / f"{video_path.stem}_trajectory.png"
+        )
 
-        if tracking_df.empty or "x" not in tracking_df.columns or "y" not in tracking_df.columns:
-            logger.warning("No animal detections for '%s'; skipping trajectory plot.", video_path.name)
+        if (
+            tracking_df.empty
+            or "x" not in tracking_df.columns
+            or "y" not in tracking_df.columns
+        ):
+            logger.warning(
+                "No animal detections for '%s'; skipping trajectory plot.",
+                video_path.name,
+            )
             return
         detected = tracking_df.dropna(subset=["x", "y"])
         if detected.empty:
-            logger.warning("No animal detections for '%s'; skipping trajectory plot.", video_path.name)
+            logger.warning(
+                "No animal detections for '%s'; skipping trajectory plot.",
+                video_path.name,
+            )
             return
 
         from matplotlib.backends.backend_agg import FigureCanvasAgg

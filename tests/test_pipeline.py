@@ -80,13 +80,16 @@ def test_assign_labels_no_bboxes(minimal_config, fake_video_path):
     ]
     n = 5
     mask = np.ones(n, dtype=bool)
-    with patch.object(
-        ExplorationPipeline,
-        "_frame_range",
-        return_value=(0, n, 1, 4.0),
-    ), patch(
-        "explore.pipeline.prediction.VideoReader",
-    ) as mock_reader:
+    with (
+        patch.object(
+            ExplorationPipeline,
+            "_frame_range",
+            return_value=(0, n, 1, 4.0),
+        ),
+        patch(
+            "explore.pipeline.prediction.VideoReader",
+        ) as mock_reader,
+    ):
         frames = [np.zeros((150, 150, 3), dtype=np.uint8) for _ in range(n)]
         mock_reader.return_value.iter_frames.return_value = enumerate(frames)
         labels = pipeline._assign_labels(
@@ -105,7 +108,9 @@ def test_run_returns_dataframe(minimal_config, fake_video_path):
     """Full pipeline run with mocked CLIP and Grounding DINO."""
     minimal_config.video_paths = [fake_video_path]
 
-    fake_embeddings = np.random.default_rng(0).standard_normal((5, 512)).astype(np.float32)
+    fake_embeddings = (
+        np.random.default_rng(0).standard_normal((5, 512)).astype(np.float32)
+    )
     fake_labels = {
         "familiar": np.array([1, 0, 0, 0, 0], dtype=np.int32),
         "novel": np.array([0, 0, 1, 0, 1], dtype=np.int32),

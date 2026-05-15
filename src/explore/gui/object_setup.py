@@ -104,7 +104,9 @@ class ObjectSetupDialog:
             swatch.grid(row=2 * i + 1, column=2, rowspan=2, padx=6)
 
         btn_row = len(self.objects) * 2 + 2
-        detect_btn = ttk.Button(left, text="🔍  Detect Objects", command=self._run_detection)
+        detect_btn = ttk.Button(
+            left, text="🔍  Detect Objects", command=self._run_detection
+        )
         detect_btn.grid(row=btn_row, column=0, columnspan=3, pady=(12, 4), sticky="ew")
 
         confirm_btn = ttk.Button(left, text="✓  Confirm", command=self._confirm)
@@ -228,7 +230,9 @@ class ObjectSetupDialog:
             obj.name = self._name_vars[i].get().strip()
             obj.description = self._desc_vars[i].get().strip()
 
-        if any(o.bounding_box is None for o in self.objects) and not messagebox.askokcancel(
+        if any(
+            o.bounding_box is None for o in self.objects
+        ) and not messagebox.askokcancel(
             "Missing bounding boxes",
             "Some objects have no bounding box detected. Continue anyway?",
         ):

@@ -180,7 +180,6 @@ class ExperimentConfig:
         if self.video_duration_minutes <= 0:
             raise ValueError("video_duration_minutes must be > 0")
 
-
     @property
     def project_dir(self) -> Path:
         """Resolved project output directory."""
@@ -240,10 +239,12 @@ class ExperimentConfig:
         objects = []
         for o in raw_objects:
             bb = o.get("bounding_box")
-            objects.append(ObjectConfig(
-                name=o["name"],
-                bounding_box=tuple(bb) if bb else None,  # type: ignore[arg-type]
-            ))
+            objects.append(
+                ObjectConfig(
+                    name=o["name"],
+                    bounding_box=tuple(bb) if bb else None,  # type: ignore[arg-type]
+                )
+            )
 
         beh = data.pop("behavior")
         behavior = BehaviorConfig(
@@ -266,7 +267,12 @@ class ExperimentConfig:
         )
 
         # Drop any unknown top-level keys for forward compatibility
-        known = {"project_name", "project_path", "video_paths", "video_duration_minutes"}
+        known = {
+            "project_name",
+            "project_path",
+            "video_paths",
+            "video_duration_minutes",
+        }
         extra = set(data.keys()) - known
         for k in extra:
             data.pop(k)

@@ -98,9 +98,7 @@ class ActiveLearner:
 
         uncertain_idx = all_idx[uncertain_mask]
         # Sort by distance to 0.5 — most uncertain first
-        uncertain_idx = uncertain_idx[
-            np.argsort(np.abs(probas[uncertain_idx] - 0.5))
-        ]
+        uncertain_idx = uncertain_idx[np.argsort(np.abs(probas[uncertain_idx] - 0.5))]
         uncertain_idx = uncertain_idx[: self.max_query_size]
 
         logger.info(
@@ -128,8 +126,8 @@ class ActiveLearner:
         n = self.n_confident_samples
         sorted_idx = np.argsort(probas)
 
-        neg_idx = sorted_idx[:n]    # lowest probabilities → not exploring
-        pos_idx = sorted_idx[-n:]   # highest probabilities → exploring
+        neg_idx = sorted_idx[:n]  # lowest probabilities → not exploring
+        pos_idx = sorted_idx[-n:]  # highest probabilities → exploring
 
         for i in neg_idx:
             self._labeled[int(i)] = 0

@@ -80,10 +80,14 @@ class ReviewDialog:
         info.pack(fill="x")
 
         self._progress_var = tk.StringVar()
-        ttk.Label(info, textvariable=self._progress_var, font=("Helvetica", 11)).pack(side="left")
+        ttk.Label(info, textvariable=self._progress_var, font=("Helvetica", 11)).pack(
+            side="left"
+        )
 
         self._prob_var = tk.StringVar()
-        ttk.Label(info, textvariable=self._prob_var, foreground="grey").pack(side="right")
+        ttk.Label(info, textvariable=self._prob_var, foreground="grey").pack(
+            side="right"
+        )
 
         # ---- Canvas ----
         self._canvas = tk.Label(self.window)

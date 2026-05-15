@@ -116,7 +116,10 @@ def test_experiment_config_save_load(tmp_path, minimal_config):
     assert len(loaded.objects) == len(minimal_config.objects)
     assert loaded.objects[0].name == "familiar"
     assert loaded.objects[0].bounding_box == (10, 10, 80, 80)
-    assert loaded.behavior.exploration_prompts == minimal_config.behavior.exploration_prompts
+    assert (
+        loaded.behavior.exploration_prompts
+        == minimal_config.behavior.exploration_prompts
+    )
 
 
 def test_experiment_config_from_dict_defaults(tmp_path):

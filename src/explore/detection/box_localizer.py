@@ -21,11 +21,11 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 _BOX_COLORS = [
-    (0, 220, 220),   # cyan
-    (220, 0, 220),   # magenta
-    (40, 200, 40),   # green
-    (220, 160, 0),   # amber
-    (80, 80, 240),   # blue
+    (0, 220, 220),  # cyan
+    (220, 0, 220),  # magenta
+    (40, 200, 40),  # green
+    (220, 160, 0),  # amber
+    (80, 80, 240),  # blue
 ]
 
 
@@ -137,9 +137,9 @@ class BoxLocalizer:
 
         # Keep only reference keypoints inside the margin-expanded box
         box_idx = [
-            i for i, kp in enumerate(ref_kps)
-            if (x1 - m) <= kp.pt[0] <= (x2 + m)
-            and (y1 - m) <= kp.pt[1] <= (y2 + m)
+            i
+            for i, kp in enumerate(ref_kps)
+            if (x1 - m) <= kp.pt[0] <= (x2 + m) and (y1 - m) <= kp.pt[1] <= (y2 + m)
         ]
         if len(box_idx) < 2:
             logger.warning("ORB: <2 keypoints near box; keeping original.")
@@ -160,17 +160,23 @@ class BoxLocalizer:
         if len(good) < self.min_matches:
             logger.warning(
                 "ORB: only %d good matches (need %d) for box %s; keeping original.",
-                len(good), self.min_matches, reference_box,
+                len(good),
+                self.min_matches,
+                reference_box,
             )
             return LocalizationResult(
-                box=reference_box, translation=(0.0, 0.0),
-                n_matches=len(good), success=False,
+                box=reference_box,
+                translation=(0.0, 0.0),
+                n_matches=len(good),
+                success=False,
             )
 
-        translations = np.array([
-            np.array(tgt_kps[g.trainIdx].pt) - np.array(box_kps[g.queryIdx].pt)
-            for g in good
-        ])
+        translations = np.array(
+            [
+                np.array(tgt_kps[g.trainIdx].pt) - np.array(box_kps[g.queryIdx].pt)
+                for g in good
+            ]
+        )
         tx = float(np.median(translations[:, 0]))
         ty = float(np.median(translations[:, 1]))
 
@@ -182,10 +188,17 @@ class BoxLocalizer:
         )
         logger.info(
             "ORB: %s → %s  shift=(%.1f, %.1f)  matches=%d",
-            reference_box, new_box, tx, ty, len(good),
+            reference_box,
+            new_box,
+            tx,
+            ty,
+            len(good),
         )
         return LocalizationResult(
-            box=new_box, translation=(tx, ty), n_matches=len(good), success=True,
+            box=new_box,
+            translation=(tx, ty),
+            n_matches=len(good),
+            success=True,
         )
 
     def localize_from_video(
@@ -227,7 +240,10 @@ class BoxLocalizer:
 
         cap.release()
         return best or LocalizationResult(
-            box=reference_box, translation=(0.0, 0.0), n_matches=0, success=False,
+            box=reference_box,
+            translation=(0.0, 0.0),
+            n_matches=0,
+            success=False,
         )
 
     @staticmethod
@@ -247,7 +263,13 @@ class BoxLocalizer:
             (tw, th), _ = cv2.getTextSize(name, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
             cv2.rectangle(out, (x1, y1 - th - 6), (x1 + tw + 4, y1), (0, 0, 0), -1)
             cv2.putText(
-                out, name, (x1 + 2, y1 - 4),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA,
+                out,
+                name,
+                (x1 + 2, y1 - 4),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                1,
+                cv2.LINE_AA,
             )
         return out

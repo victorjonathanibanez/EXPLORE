@@ -103,9 +103,7 @@ class VideoReader:
         cap.set(cv2.CAP_PROP_POS_FRAMES, index)
         ok, frame = cap.read()
         if not ok:
-            raise RuntimeError(
-                f"Could not read frame {index} from '{self.path}'"
-            )
+            raise RuntimeError(f"Could not read frame {index} from '{self.path}'")
         return frame
 
     def iter_frames(

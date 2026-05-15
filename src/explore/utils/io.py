@@ -12,7 +12,9 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def save_results(df: pd.DataFrame, path: Path | str, *, avoid_overwrite: bool = True) -> Path:
+def save_results(
+    df: pd.DataFrame, path: Path | str, *, avoid_overwrite: bool = True
+) -> Path:
     """Save a results DataFrame to CSV.
 
     Parameters

@@ -89,25 +89,49 @@ class BehaviorSetupDialog:
         thr_frame.pack(fill="x", **pad)
         ttk.Label(thr_frame, text="Confidence threshold:").pack(side="left")
         self._thr_var = tk.DoubleVar(value=self.behavior.confidence_threshold)
-        ttk.Scale(thr_frame, from_=0.1, to=0.9, variable=self._thr_var, orient="horizontal", length=200).pack(side="left", padx=8)
+        ttk.Scale(
+            thr_frame,
+            from_=0.1,
+            to=0.9,
+            variable=self._thr_var,
+            orient="horizontal",
+            length=200,
+        ).pack(side="left", padx=8)
         ttk.Label(thr_frame, textvariable=self._thr_var).pack(side="left")
 
         ttk.Label(thr_frame, text="  Min bout (s):").pack(side="left", padx=(16, 0))
         self._bout_var = tk.DoubleVar(value=self.behavior.min_bout_seconds)
-        ttk.Spinbox(thr_frame, from_=0.0, to=10.0, increment=0.5, textvariable=self._bout_var, width=6).pack(side="left", padx=4)
+        ttk.Spinbox(
+            thr_frame,
+            from_=0.0,
+            to=10.0,
+            increment=0.5,
+            textvariable=self._bout_var,
+            width=6,
+        ).pack(side="left", padx=4)
 
         # ---- Buttons ----
         btn_frame = ttk.Frame(self.window, padding=8)
         btn_frame.pack(fill="x", **pad)
-        ttk.Button(btn_frame, text="✓  Confirm", command=self._confirm).pack(side="right", padx=4)
+        ttk.Button(btn_frame, text="✓  Confirm", command=self._confirm).pack(
+            side="right", padx=4
+        )
 
     # ------------------------------------------------------------------
     # Confirm
     # ------------------------------------------------------------------
 
     def _confirm(self) -> None:
-        pos = [line.strip() for line in self._pos_text.get("1.0", "end").splitlines() if line.strip()]
-        neg = [line.strip() for line in self._neg_text.get("1.0", "end").splitlines() if line.strip()]
+        pos = [
+            line.strip()
+            for line in self._pos_text.get("1.0", "end").splitlines()
+            if line.strip()
+        ]
+        neg = [
+            line.strip()
+            for line in self._neg_text.get("1.0", "end").splitlines()
+            if line.strip()
+        ]
 
         if not pos or not neg:
             messagebox.showerror(

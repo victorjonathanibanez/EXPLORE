@@ -41,8 +41,7 @@ def gui() -> None:
         from explore.gui.nicegui_app import launch
     except ImportError:
         click.echo(
-            "NiceGUI is required for the GUI.  Install with:\n"
-            "  pip install nicegui",
+            "NiceGUI is required for the GUI.  Install with:\n  pip install nicegui",
             err=True,
         )
         sys.exit(1)
@@ -56,8 +55,13 @@ def gui() -> None:
 
 @main.command()
 @click.argument("config", type=click.Path(exists=True, path_type=Path))
-@click.option("--output", "-o", type=click.Path(path_type=Path), default=None,
-              help="Override the results output directory.")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Override the results output directory.",
+)
 @click.option("--verbose", "-v", is_flag=True, help="Enable DEBUG logging.")
 def run(config: Path, output: Path | None, verbose: bool) -> None:
     """Run headless analysis from a YAML CONFIG file."""
@@ -87,8 +91,7 @@ def run(config: Path, output: Path | None, verbose: bool) -> None:
 
 
 @main.command(name="init")
-@click.option("--output", "-o", default="experiment.yaml",
-              help="Output YAML filename.")
+@click.option("--output", "-o", default="experiment.yaml", help="Output YAML filename.")
 def init_config(output: str) -> None:
     """Interactively create a new experiment config YAML."""
     click.echo("EXPLORE — new experiment setup\n")
@@ -136,6 +139,5 @@ def init_config(output: str) -> None:
 
     click.echo(f"\nConfig written to '{out_path}'.")
     click.echo(
-        "Open the GUI to draw bounding boxes, then run:\n"
-        f"  explore run {out_path}"
+        f"Open the GUI to draw bounding boxes, then run:\n  explore run {out_path}"
     )

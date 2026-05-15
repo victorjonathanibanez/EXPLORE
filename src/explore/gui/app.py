@@ -117,7 +117,9 @@ class ExploreApp:
         ttk.Label(tab, text="Video files:").grid(row=2, column=0, sticky="ne", pady=4)
         frame = ttk.Frame(tab)
         frame.grid(row=2, column=1, sticky="w", padx=8)
-        self._video_listbox = tk.Listbox(frame, height=5, width=50, selectmode="extended")
+        self._video_listbox = tk.Listbox(
+            frame, height=5, width=50, selectmode="extended"
+        )
         self._video_listbox.pack(side="left")
         sb = ttk.Scrollbar(frame, orient="vertical", command=self._video_listbox.yview)
         sb.pack(side="left", fill="y")
@@ -131,9 +133,9 @@ class ExploreApp:
             row=3, column=0, sticky="e", pady=4
         )
         self._duration = tk.IntVar(value=5)
-        ttk.Spinbox(
-            tab, from_=1, to=120, textvariable=self._duration, width=6
-        ).grid(row=3, column=1, sticky="w", padx=8)
+        ttk.Spinbox(tab, from_=1, to=120, textvariable=self._duration, width=6).grid(
+            row=3, column=1, sticky="w", padx=8
+        )
 
     def _browse_project_path(self) -> None:
         path = filedialog.askdirectory(title="Select project folder")
@@ -183,7 +185,9 @@ class ExploreApp:
 
         btn_col = ttk.Frame(tab)
         btn_col.grid(row=1, column=1, sticky="n")
-        self._parse_btn = ttk.Button(btn_col, text="Parse scene →", command=self._parse_scene)
+        self._parse_btn = ttk.Button(
+            btn_col, text="Parse scene →", command=self._parse_scene
+        )
         self._parse_btn.pack(fill="x", pady=(0, 4))
         self._detect_btn = ttk.Button(
             btn_col, text="Detect objects ▸", command=self._detect_objects
@@ -214,7 +218,9 @@ class ExploreApp:
         canvas.configure(yscrollcommand=vsb.set)
 
         self._obj_frame = ttk.Frame(canvas)
-        self._obj_win = canvas.create_window((0, 0), window=self._obj_frame, anchor="nw")
+        self._obj_win = canvas.create_window(
+            (0, 0), window=self._obj_frame, anchor="nw"
+        )
         self._obj_frame.bind(
             "<Configure>",
             lambda _: canvas.configure(scrollregion=canvas.bbox("all")),
@@ -230,15 +236,17 @@ class ExploreApp:
 
         add_row = ttk.Frame(tab)
         add_row.grid(row=4, column=0, columnspan=2, sticky="w", pady=(4, 0))
-        ttk.Button(add_row, text="+ Add object", command=lambda: self._add_object_row()).pack(
-            side="left"
-        )
+        ttk.Button(
+            add_row, text="+ Add object", command=lambda: self._add_object_row()
+        ).pack(side="left")
         ttk.Button(add_row, text="Clear all", command=self._clear_object_rows).pack(
             side="left", padx=8
         )
 
         # ---- Detection preview thumbnail ----
-        self._preview_label = ttk.Label(tab, text="Detection preview will appear here after detection.")
+        self._preview_label = ttk.Label(
+            tab, text="Detection preview will appear here after detection."
+        )
         self._preview_label.grid(row=5, column=0, columnspan=2, pady=(8, 0), sticky="w")
 
     def _scene_focus_in(self, _: tk.Event) -> None:  # type: ignore[type-arg]
@@ -326,9 +334,7 @@ class ExploreApp:
             return
 
         self._detect_btn.configure(state="disabled", text="Detecting…")
-        threading.Thread(
-            target=self._detect_thread, args=(cfg,), daemon=True
-        ).start()
+        threading.Thread(target=self._detect_thread, args=(cfg,), daemon=True).start()
 
     def _detect_thread(self, cfg: ExperimentConfig) -> None:
         from explore.pipeline.prediction import ExplorationPipeline
@@ -345,9 +351,13 @@ class ExploreApp:
 
             status("Running Grounding DINO…")
             _, annotated = self._pipeline.detect_objects()  # type: ignore[union-attr]
-            self.root.after(0, lambda: self._apply_detection_results(cfg.objects, annotated))
+            self.root.after(
+                0, lambda: self._apply_detection_results(cfg.objects, annotated)
+            )
         except Exception as exc:
-            err = str(exc)  # capture now — Python 3 deletes `exc` after the except block
+            err = str(
+                exc
+            )  # capture now — Python 3 deletes `exc` after the except block
             logger.exception("Detection error")
             self.root.after(0, lambda: messagebox.showerror("Detection error", err))
         finally:
@@ -385,9 +395,7 @@ class ExploreApp:
             self._preview_label.configure(image=photo, text="")
             self._preview_label.image = photo  # type: ignore[attr-defined]  # keep reference
         except Exception as exc:
-            self._preview_label.configure(
-                text=f"Preview unavailable: {exc}", image=""
-            )
+            self._preview_label.configure(text=f"Preview unavailable: {exc}", image="")
 
     # ------------------------------------------------------------------
     # Tab 3 — Behavior
@@ -484,9 +492,8 @@ class ExploreApp:
 
         # Auto-infer familiar/novel for DI/RI
         import re
-        novel_names = [
-            o.name for o in objects if re.match(r"^novel(_\d+)?$", o.name)
-        ]
+
+        novel_names = [o.name for o in objects if re.match(r"^novel(_\d+)?$", o.name)]
         familiar_names = [
             o.name for o in objects if re.match(r"^familiar(_\d+)?$", o.name)
         ]
@@ -532,14 +539,18 @@ class ExploreApp:
 
         try:
             if self._pipeline is None:
-                self.root.after(0, lambda: self._log("Loading models… (1–2 min on first run)"))
+                self.root.after(
+                    0, lambda: self._log("Loading models… (1–2 min on first run)")
+                )
                 self._pipeline = ExplorationPipeline(cfg, headless=False)
             else:
                 self._pipeline.config = cfg  # type: ignore[union-attr]
                 self._pipeline.headless = False  # type: ignore[union-attr]
             pipeline = self._pipeline
 
-            missing = [o.name or o.description for o in cfg.objects if o.bounding_box is None]
+            missing = [
+                o.name or o.description for o in cfg.objects if o.bounding_box is None
+            ]
             if missing:
                 raise ValueError(
                     "Object bounding boxes not set for: "

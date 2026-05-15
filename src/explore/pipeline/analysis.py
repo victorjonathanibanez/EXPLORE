@@ -42,7 +42,9 @@ class BehaviorAnalyzer:
         if fps <= 0:
             raise ValueError(f"fps must be > 0, got {fps}")
         if bin_duration_seconds <= 0:
-            raise ValueError(f"bin_duration_seconds must be > 0, got {bin_duration_seconds}")
+            raise ValueError(
+                f"bin_duration_seconds must be > 0, got {bin_duration_seconds}"
+            )
         if min_bout_seconds < 0:
             raise ValueError(f"min_bout_seconds must be >= 0, got {min_bout_seconds}")
 
@@ -159,11 +161,7 @@ class BehaviorAnalyzer:
         numeric_cols = df.select_dtypes(include="number").columns.tolist()
         numeric_cols = [c for c in numeric_cols if c != "minute"]
 
-        agg = (
-            df.groupby("animal")[numeric_cols]
-            .agg(["mean", "sem"])
-            .round(4)
-        )
+        agg = df.groupby("animal")[numeric_cols].agg(["mean", "sem"]).round(4)
         agg.columns = ["_".join(c) for c in agg.columns]
         return agg.reset_index()
 

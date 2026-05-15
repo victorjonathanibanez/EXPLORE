@@ -65,6 +65,7 @@ def test_detect_raises_import_error_if_transformers_missing(
 ):
     """If transformers is not installed, detect() raises ImportError."""
     import builtins
+
     real_import = builtins.__import__
 
     def _block_transformers(name, *args, **kwargs):

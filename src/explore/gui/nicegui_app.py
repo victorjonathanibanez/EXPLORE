@@ -52,6 +52,7 @@ def _load_logo_data_url(height_px: int = 80) -> str:
     try:
         import numpy as _np
         from PIL import Image as _PILImage
+
         img = _PILImage.open(_LOGO_PATH).convert("RGBA")
         arr = _np.array(img)
         alpha = arr[:, :, 3]
@@ -91,9 +92,7 @@ def _dist_to_box_edge(cx: float, cy: float, box: tuple) -> float:
     return float((dx * dx + dy * dy) ** 0.5)
 
 
-def _get_centroid(
-    frame: np.ndarray, background: np.ndarray
-) -> tuple[int, int] | None:
+def _get_centroid(frame: np.ndarray, background: np.ndarray) -> tuple[int, int] | None:
     diff = cv2.absdiff(frame, background)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)
@@ -119,6 +118,7 @@ def _make_thumbnail(
 ) -> str:
     """Return a JPEG data-URL thumbnail with box overlays and centroid dot."""
     from PIL import Image
+
     h, w = frame.shape[:2]
     scale = width / w
     thumb = cv2.resize(frame.copy(), (width, int(h * scale)))
@@ -133,14 +133,22 @@ def _make_thumbnail(
             cv2.addWeighted(ov, 0.25, thumb, 0.75, 0, thumb)
         cv2.rectangle(thumb, (x1, y1), (x2, y2), bgr, 2 if is_hl else 1)
     if centroid is not None:
-        cv2.circle(thumb, (int(centroid[0] * scale), int(centroid[1] * scale)), 4, (0, 0, 255), -1)
+        cv2.circle(
+            thumb,
+            (int(centroid[0] * scale), int(centroid[1] * scale)),
+            4,
+            (0, 0, 255),
+            -1,
+        )
     rgb = cv2.cvtColor(thumb, cv2.COLOR_BGR2RGB)
     buf = io.BytesIO()
     Image.fromarray(rgb).save(buf, format="JPEG", quality=75)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def _quick_background(video_path: Path, n: int = 15, skip_s: float = 30.0) -> np.ndarray | None:
+def _quick_background(
+    video_path: Path, n: int = 15, skip_s: float = 30.0
+) -> np.ndarray | None:
     cap = cv2.VideoCapture(str(video_path))
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps_v = cap.get(cv2.CAP_PROP_FPS) or 25.0
@@ -159,7 +167,9 @@ def _quick_background(video_path: Path, n: int = 15, skip_s: float = 30.0) -> np
     cap.release()
     if not frames:
         return None
-    return np.median(np.stack(frames, axis=0).astype(np.float32), axis=0).astype(np.uint8)
+    return np.median(np.stack(frames, axis=0).astype(np.float32), axis=0).astype(
+        np.uint8
+    )
 
 
 def _sample_label_window(
@@ -206,13 +216,17 @@ def _sample_label_window(
                     label = nearest
 
         hl = label if label != _NOT_EXP else None
-        results.append({
-            "frame": frame,
-            "time_s": time_s,
-            "label": label,
-            "thumb": _make_thumbnail(frame, video_boxes, hl, centroid, width=120),
-            "thumb_lg": _make_thumbnail(frame, video_boxes, hl, centroid, width=400),
-        })
+        results.append(
+            {
+                "frame": frame,
+                "time_s": time_s,
+                "label": label,
+                "thumb": _make_thumbnail(frame, video_boxes, hl, centroid, width=120),
+                "thumb_lg": _make_thumbnail(
+                    frame, video_boxes, hl, centroid, width=400
+                ),
+            }
+        )
         idx += step
 
     cap.release()
@@ -263,13 +277,15 @@ def _predict_label_window(
     results = []
     for f, t, lbl in zip(raw_frames, timestamps, labels, strict=False):
         hl = lbl if lbl != _NOT_EXP else None
-        results.append({
-            "frame": f,
-            "time_s": t,
-            "label": lbl,
-            "thumb": _make_thumbnail(f, video_boxes, hl, None, width=120),
-            "thumb_lg": _make_thumbnail(f, video_boxes, hl, None, width=400),
-        })
+        results.append(
+            {
+                "frame": f,
+                "time_s": t,
+                "label": lbl,
+                "thumb": _make_thumbnail(f, video_boxes, hl, None, width=120),
+                "thumb_lg": _make_thumbnail(f, video_boxes, hl, None, width=400),
+            }
+        )
     return results
 
 
@@ -324,7 +340,9 @@ def _build_timeline_html(
         '<span style="font-size:12px;color:#444;">not exploring</span></span>'
     )
 
-    exp_s = sum(cnt for lbl, cnt in runs if lbl != _NOT_EXP and lbl in color_map) / fps_eff
+    exp_s = (
+        sum(cnt for lbl, cnt in runs if lbl != _NOT_EXP and lbl in color_map) / fps_eff
+    )
     stats_parts = [f"exploring: {exp_s:.1f}s / {duration_s_actual:.0f}s"]
     for name in obj_names:
         t = sum(cnt for lbl, cnt in runs if lbl == name) / fps_eff
@@ -336,11 +354,11 @@ def _build_timeline_html(
         f'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">{"".join(legend_parts)}</div>'
         f'<div style="width:100%;height:36px;display:flex;border-radius:4px;overflow:hidden;border:1px solid #e0e0e0;">{"".join(segs)}</div>'
         f'<div style="display:flex;justify-content:space-between;font-size:10px;color:#aaa;margin-top:3px;">'
-        f'<span>{start_s:.0f}s</span>'
+        f"<span>{start_s:.0f}s</span>"
         f'<span style="color:#666;">{"  ·  ".join(stats_parts)}</span>'
-        f'<span>{end_s:.0f}s</span>'
-        f'</div>'
-        f'</div>'
+        f"<span>{end_s:.0f}s</span>"
+        f"</div>"
+        f"</div>"
     )
 
 
@@ -381,6 +399,7 @@ def _infer_duration_minutes(video_paths: list[str]) -> int | None:
 def _bgr_to_data_url(frame: np.ndarray) -> str:
     """Convert a BGR numpy frame to a JPEG data-URL string."""
     from PIL import Image
+
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     buf = io.BytesIO()
     Image.fromarray(rgb).save(buf, format="JPEG", quality=85)
@@ -407,6 +426,7 @@ def _pick_files(title: str = "Select video files") -> list[str]:
     """Open a native file-chooser dialog (uses tkinter stdlib — no extra dep)."""
     import tkinter as tk
     from tkinter import filedialog
+
     root = tk.Tk()
     root.withdraw()
     root.wm_attributes("-topmost", True)
@@ -425,6 +445,7 @@ def _pick_directory(title: str = "Select output directory") -> str:
     """Open a native folder-chooser dialog."""
     import tkinter as tk
     from tkinter import filedialog
+
     root = tk.Tk()
     root.withdraw()
     root.wm_attributes("-topmost", True)
@@ -452,7 +473,7 @@ class ExploreApp:
         self.reference_video_idx: int = 0
         self.reference_frame: np.ndarray | None = None
         self.reference_frame_url: str = ""
-        self.objects: list[dict] = []          # [{name, box: (x1,y1,x2,y2)}]
+        self.objects: list[dict] = []  # [{name, box: (x1,y1,x2,y2)}]
 
         # --- Box-drawing state ---
         self._drawing: bool = False
@@ -479,9 +500,9 @@ class ExploreApp:
 
         # --- Labeling / training loop (Tab 4) ---
         self._label_window_video: str = ""
-        self._manual_start_s: float | None = None   # None = random
-        self._current_window: dict | None = None    # window being shown/edited
-        self._training_pool: list[dict] = []           # past windows saved to pool
+        self._manual_start_s: float | None = None  # None = random
+        self._current_window: dict | None = None  # window being shown/edited
+        self._training_pool: list[dict] = []  # past windows saved to pool
         self._head_classes: list[str] = []
         self._head_trained: bool = False
         self._trained_clf = None
@@ -521,9 +542,7 @@ class ExploreApp:
                     f'style="height:50px;width:auto;object-fit:contain;" />'
                 )
             ui.label("EXPLORE").classes("text-xl font-bold tracking-wide")
-            ui.label("Object Tests — behavior analysis").classes(
-                "text-sm opacity-60"
-            )
+            ui.label("Object Tests — behavior analysis").classes("text-sm opacity-60")
 
         with ui.tabs().classes("w-full bg-white shadow-sm") as tabs:
             self._tabs = tabs
@@ -551,9 +570,11 @@ class ExploreApp:
         # Name-entry dialog (shared across tabs)
         with ui.dialog() as self._name_dialog, ui.card().classes("p-4 gap-3 min-w-64"):
             ui.label("Name this object").classes("text-base font-semibold")
-            self._name_input = ui.input(
-                placeholder="e.g. familiar  /  novel  /  object_1"
-            ).classes("w-full").props("autofocus")
+            self._name_input = (
+                ui.input(placeholder="e.g. familiar  /  novel  /  object_1")
+                .classes("w-full")
+                .props("autofocus")
+            )
             with ui.row().classes("gap-2 justify-end"):
                 ui.button("Cancel", on_click=self._cancel_draw).props("flat color=grey")
                 ui.button("Add", icon="check", on_click=self._confirm_add).classes(
@@ -573,7 +594,8 @@ class ExploreApp:
                 ui.icon("restore").classes("text-gray-400 text-base")
                 ui.label("Resume an existing project:").classes("text-sm text-gray-500")
                 ui.button(
-                    "Load project", icon="folder_open",
+                    "Load project",
+                    icon="folder_open",
                     on_click=self._load_project_dialog,
                 ).props("flat color=primary dense")
 
@@ -585,9 +607,9 @@ class ExploreApp:
 
                 ui.label("Output directory").classes("text-sm text-gray-500 mt-2")
                 with ui.row().classes("w-full gap-2 items-center"):
-                    ui.input(placeholder="/path/to/output").classes("flex-grow").bind_value(
-                        self, "project_path"
-                    )
+                    ui.input(placeholder="/path/to/output").classes(
+                        "flex-grow"
+                    ).bind_value(self, "project_path")
                     ui.button(
                         icon="folder",
                         on_click=self._browse_output_dir,
@@ -596,9 +618,9 @@ class ExploreApp:
             with ui.card().classes("w-full p-4 gap-3"):
                 with ui.row().classes("w-full items-center justify-between"):
                     ui.label("Video files").classes("text-base font-medium")
-                    ui.button("Add videos", icon="add", on_click=self._add_videos).props(
-                        "flat color=primary"
-                    )
+                    ui.button(
+                        "Add videos", icon="add", on_click=self._add_videos
+                    ).props("flat color=primary")
 
                 @ui.refreshable
                 def video_list() -> None:
@@ -627,9 +649,9 @@ class ExploreApp:
 
             with ui.card().classes("w-full p-4 gap-3"):
                 ui.label("Video duration (minutes)").classes("text-sm text-gray-500")
-                ui.label("Auto-filled when videos are added — adjust if needed.").classes(
-                    "text-xs text-gray-400"
-                )
+                ui.label(
+                    "Auto-filled when videos are added — adjust if needed."
+                ).classes("text-xs text-gray-400")
                 ui.number(min=1, max=120, step=1).classes("w-32").bind_value(
                     self, "video_duration"
                 )
@@ -654,12 +676,14 @@ class ExploreApp:
                             options=[],
                             value=None,
                             on_change=lambda e: setattr(
-                                self, "reference_video_idx",
+                                self,
+                                "reference_video_idx",
                                 e.value if e.value is not None else 0,
                             ),
                         ).classes("flex-grow")
                         ui.button(
-                            "Get frame", icon="refresh",
+                            "Get frame",
+                            icon="refresh",
                             on_click=lambda: self._load_reference_frame(ref_sel),
                         ).props("flat color=primary")
 
@@ -679,9 +703,9 @@ class ExploreApp:
             with splitter.after:  # noqa: SIM117
                 with ui.column().classes("w-full h-full p-4 gap-3"):
                     ui.label("Objects").classes("text-base font-semibold")
-                    ui.label(
-                        "Draw a box, then enter a name for each object."
-                    ).classes("text-xs text-gray-400")
+                    ui.label("Draw a box, then enter a name for each object.").classes(
+                        "text-xs text-gray-400"
+                    )
 
                     @ui.refreshable
                     def objects_panel() -> None:
@@ -736,7 +760,8 @@ class ExploreApp:
 
             with ui.row().classes("gap-2 mt-2"):
                 ui.button(
-                    "Run localization", icon="search",
+                    "Run localization",
+                    icon="search",
                     on_click=self._run_localization,
                 ).classes("bg-indigo-600 text-white")
                 ui.button(
@@ -769,25 +794,39 @@ class ExploreApp:
                         @ui.refreshable
                         def video_select_area() -> None:
                             video_options = {p: Path(p).name for p in self.video_paths}
-                            if self.video_paths and self._label_window_video not in video_options:
+                            if (
+                                self.video_paths
+                                and self._label_window_video not in video_options
+                            ):
                                 self._label_window_video = self.video_paths[0]
                             ui.select(
-                                options=video_options if video_options else {"": "No videos yet"},
-                                value=self._label_window_video if self._label_window_video in video_options else None,
-                                on_change=lambda e: setattr(self, "_label_window_video", e.value),
+                                options=video_options
+                                if video_options
+                                else {"": "No videos yet"},
+                                value=self._label_window_video
+                                if self._label_window_video in video_options
+                                else None,
+                                on_change=lambda e: setattr(
+                                    self, "_label_window_video", e.value
+                                ),
                             ).classes("w-52").props("dense outlined")
 
                         self._label_video_select_refresh = video_select_area.refresh
                         video_select_area()
                     with ui.column().classes("gap-1"):
-                        ui.label("Start (s) — leave blank for random").classes("text-xs text-gray-500")
+                        ui.label("Start (s) — leave blank for random").classes(
+                            "text-xs text-gray-500"
+                        )
                         ui.number(
-                            min=0, step=1, placeholder="random",
+                            min=0,
+                            step=1,
+                            placeholder="random",
                         ).classes("w-32").props("dense outlined clearable").bind_value(
                             self, "_manual_start_s"
                         )
                     ui.button(
-                        "Sample window", icon="video_label",
+                        "Sample window",
+                        icon="video_label",
                         on_click=self._do_sample_window,
                     ).classes("bg-indigo-600 text-white")
                     self._sample_status = ui.label("").classes(
@@ -806,13 +845,18 @@ class ExploreApp:
                 win = self._current_window
                 all_labels = [o["name"] for o in self.objects] + [_NOT_EXP]
                 options = {lbl: lbl.replace("_", " ") for lbl in all_labels}
-                color_map = {n: _BOX_COLORS[i % len(_BOX_COLORS)] for i, n in enumerate(all_labels)}
+                color_map = {
+                    n: _BOX_COLORS[i % len(_BOX_COLORS)]
+                    for i, n in enumerate(all_labels)
+                }
                 color_map[_NOT_EXP] = "#888888"
 
                 dur = len(win["frames"]) / 4.0
                 is_predicted = win.get("predicted", False)
                 source_icon = "model_training" if is_predicted else "video_label"
-                source_label = "model predictions" if is_predicted else "proximity labels"
+                source_label = (
+                    "model predictions" if is_predicted else "proximity labels"
+                )
 
                 with ui.card().classes("w-full p-2 gap-2 bg-gray-50"):
                     with ui.row().classes("items-center gap-2"):
@@ -827,7 +871,9 @@ class ExploreApp:
                     obj_names = [o["name"] for o in self.objects]
                     ui.html(
                         _build_timeline_html(
-                            [f["label"] for f in win["frames"]], obj_names, win["start_s"]
+                            [f["label"] for f in win["frames"]],
+                            obj_names,
+                            win["start_s"],
                         )
                     ).classes("w-full")
 
@@ -839,21 +885,30 @@ class ExploreApp:
                         with ui.row().classes("flex-nowrap items-start p-2 gap-1"):
                             for frame_d in win["frames"]:
                                 c = color_map.get(frame_d["label"], "#ccc")
-                                with ui.column().classes("items-center gap-0").style(
-                                    "min-width:92px; max-width:92px;"
+                                with (
+                                    ui.column()
+                                    .classes("items-center gap-0")
+                                    .style("min-width:92px; max-width:92px;")
                                 ):
-                                    img = ui.image(frame_d["thumb"]).style(
-                                        "width:88px; height:66px;"
-                                        "object-fit:cover; border-radius:3px;"
-                                    ).classes("cursor-zoom-in")
-                                    with img, ui.tooltip().classes(
-                                        "bg-transparent shadow-none p-0"
+                                    img = (
+                                        ui.image(frame_d["thumb"])
+                                        .style(
+                                            "width:88px; height:66px;"
+                                            "object-fit:cover; border-radius:3px;"
+                                        )
+                                        .classes("cursor-zoom-in")
+                                    )
+                                    with (
+                                        img,
+                                        ui.tooltip().classes(
+                                            "bg-transparent shadow-none p-0"
+                                        ),
                                     ):
                                         ui.image(frame_d["thumb_lg"]).style(
-                                                "width:400px; height:auto;"
-                                                "border-radius:6px;"
-                                                "box-shadow:0 4px 20px rgba(0,0,0,0.4);"
-                                            )
+                                            "width:400px; height:auto;"
+                                            "border-radius:6px;"
+                                            "box-shadow:0 4px 20px rgba(0,0,0,0.4);"
+                                        )
                                     ui.element("div").style(
                                         f"width:88px; height:4px; background:{c};"
                                         "border-radius:2px; margin:2px 0;"
@@ -863,9 +918,15 @@ class ExploreApp:
                                     )
                                     ui.select(
                                         options=options,
-                                        value=frame_d["label"] if frame_d["label"] in options else _NOT_EXP,
-                                        on_change=lambda e, fd=frame_d: fd.update({"label": e.value}),
-                                    ).style("width:88px; font-size:9px;").props("dense outlined")
+                                        value=frame_d["label"]
+                                        if frame_d["label"] in options
+                                        else _NOT_EXP,
+                                        on_change=lambda e, fd=frame_d: fd.update(
+                                            {"label": e.value}
+                                        ),
+                                    ).style("width:88px; font-size:9px;").props(
+                                        "dense outlined"
+                                    )
 
             self._current_window_refresh = current_window_area.refresh
             current_window_area()
@@ -882,9 +943,7 @@ class ExploreApp:
                         pool_summary.text = "Training pool: empty"
                         pool_classes.text = ""
                         return
-                    pool_summary.text = (
-                        f"Training pool: {n} frames from {len(self._training_pool)} window(s)"
-                    )
+                    pool_summary.text = f"Training pool: {n} frames from {len(self._training_pool)} window(s)"
                     counts: dict[str, int] = {}
                     for f in all_frames:
                         counts[f["label"]] = counts.get(f["label"], 0) + 1
@@ -900,7 +959,8 @@ class ExploreApp:
 
                 with ui.row().classes("items-center gap-2 mt-0"):
                     ui.button(
-                        "Reset pool", icon="delete_sweep",
+                        "Reset pool",
+                        icon="delete_sweep",
                         on_click=lambda: [
                             self._training_pool.clear(),
                             _update_pool_label(),
@@ -912,13 +972,15 @@ class ExploreApp:
             # ── Train + Preview ──────────────────────────────────────────
             with ui.row().classes("gap-3 items-center flex-wrap"):
                 ui.button(
-                    "Train + Preview", icon="model_training",
+                    "Train + Preview",
+                    icon="model_training",
                     on_click=self._train_and_preview,
                 ).classes("bg-green-600 text-white")
                 self._train_status = ui.label("").classes("text-sm text-gray-500")
 
             ui.button(
-                "Next: Analyze →", icon="navigate_next",
+                "Next: Analyze →",
+                icon="navigate_next",
                 on_click=lambda: [
                     self._save_session(),
                     tabs.set_value(next_tab),
@@ -1083,9 +1145,7 @@ class ExploreApp:
     def _update_ref_select(self) -> None:
         if not hasattr(self, "_ref_sel") or self._ref_sel is None:
             return
-        options = {
-            i: Path(p).name for i, p in enumerate(self.video_paths)
-        }
+        options = {i: Path(p).name for i, p in enumerate(self.video_paths)}
         self._ref_sel.options = options
         if self.video_paths:
             self._ref_sel.value = 0
@@ -1129,8 +1189,10 @@ class ExploreApp:
                 cx, cy = e.image_x, e.image_y
                 if abs(cx - sx) > 8 and abs(cy - sy) > 8:
                     self._pending_box = (
-                        int(min(sx, cx)), int(min(sy, cy)),
-                        int(max(sx, cx)), int(max(sy, cy)),
+                        int(min(sx, cx)),
+                        int(min(sy, cy)),
+                        int(max(sx, cx)),
+                        int(max(sy, cy)),
                     )
                     if self._name_input:
                         self._name_input.value = ""
@@ -1214,7 +1276,9 @@ class ExploreApp:
             ui.notify("Label at least one object first.", color="warning")
             return
         if self.reference_frame is None:
-            ui.notify("Load a reference frame first (click 'Get frame').", color="warning")
+            ui.notify(
+                "Load a reference frame first (click 'Get frame').", color="warning"
+            )
             return
         self._save_session()
         tabs.set_value(next_tab)
@@ -1240,7 +1304,9 @@ class ExploreApp:
                 "video": w["video"],
                 "start_s": w["start_s"],
                 "predicted": w.get("predicted", False),
-                "frames": [{"time_s": f["time_s"], "label": f["label"]} for f in w["frames"]],
+                "frames": [
+                    {"time_s": f["time_s"], "label": f["label"]} for f in w["frames"]
+                ],
             }
             for w in self._training_pool
         ]
@@ -1306,8 +1372,12 @@ class ExploreApp:
             for vp, boxes in data.get("video_boxes", {}).items()
         }
 
-        self.exploration_prompts = data.get("exploration_prompts", list(_DEFAULT_EXPLORATION))
-        self.no_exploration_prompts = data.get("no_exploration_prompts", list(_DEFAULT_NO_EXPLORATION))
+        self.exploration_prompts = data.get(
+            "exploration_prompts", list(_DEFAULT_EXPLORATION)
+        )
+        self.no_exploration_prompts = data.get(
+            "no_exploration_prompts", list(_DEFAULT_NO_EXPLORATION)
+        )
         self.confidence_threshold = data.get("confidence_threshold", 0.5)
         self.min_bout_seconds = data.get("min_bout_seconds", 0.0)
         self.bin_duration_seconds = data.get("bin_duration_seconds", 60)
@@ -1322,7 +1392,13 @@ class ExploreApp:
                 "start_s": w["start_s"],
                 "predicted": w.get("predicted", False),
                 "frames": [
-                    {"time_s": f["time_s"], "label": f["label"], "frame": None, "thumb": "", "thumb_lg": ""}
+                    {
+                        "time_s": f["time_s"],
+                        "label": f["label"],
+                        "frame": None,
+                        "thumb": "",
+                        "thumb_lg": "",
+                    }
                     for f in w["frames"]
                 ],
                 "_needs_reload": True,
@@ -1336,6 +1412,7 @@ class ExploreApp:
         if head_path.exists() and self._head_trained:
             try:
                 from explore.classification.clip_classifier import CLIPClassifier
+
                 clf = CLIPClassifier()
                 clf.load_head(head_path)
                 self._trained_clf = clf
@@ -1420,7 +1497,10 @@ class ExploreApp:
                 for obj in self.objects:
                     boxes[obj["name"]] = obj["box"]
                     results[obj["name"]] = LocalizationResult(
-                        box=obj["box"], translation=(0.0, 0.0), n_matches=-1, success=True
+                        box=obj["box"],
+                        translation=(0.0, 0.0),
+                        n_matches=-1,
+                        success=True,
                     )
             else:
                 for obj in self.objects:
@@ -1537,8 +1617,10 @@ class ExploreApp:
                     new_x1 = max(0, min(fw - bw_box, int(bx1 + dx)))
                     new_y1 = max(0, min(fh - bh_box, int(by1 + dy)))
                     current_boxes[drag["name"]] = (
-                        new_x1, new_y1,
-                        new_x1 + bw_box, new_y1 + bh_box,
+                        new_x1,
+                        new_y1,
+                        new_x1 + bw_box,
+                        new_y1 + bh_box,
                     )
                     img = widget_holder.get("img")
                     if img:
@@ -1568,7 +1650,9 @@ class ExploreApp:
                 ui.label(video_path.name).classes("font-medium text-sm flex-grow")
                 if is_ref:
                     ui.badge("reference").props("color=blue")
-                ui.label("drag boxes to reposition").classes("text-xs text-gray-400 italic")
+                ui.label("drag boxes to reposition").classes(
+                    "text-xs text-gray-400 italic"
+                )
                 ui.button(icon="restart_alt", on_click=_reset).props(
                     "flat round dense color=grey"
                 ).tooltip("Reset boxes to ORB positions")
@@ -1600,11 +1684,13 @@ class ExploreApp:
                                 f"ORB failed ({res.n_matches} matches) — drag to fix"
                             ).props("color=red")
                         elif res.n_matches >= 10:
-                            ui.badge(f"ORB  {res.n_matches} matches").props("color=green")
+                            ui.badge(f"ORB  {res.n_matches} matches").props(
+                                "color=green"
+                            )
                         else:
-                            ui.badge(
-                                f"ORB borderline  {res.n_matches} matches"
-                            ).props("color=orange")
+                            ui.badge(f"ORB borderline  {res.n_matches} matches").props(
+                                "color=orange"
+                            )
 
     # ------------------------------------------------------------------
     # Event handlers — Label Frames tab
@@ -1641,7 +1727,11 @@ class ExploreApp:
         if use_model:
             frames = await run.io_bound(
                 _predict_label_window,
-                self._trained_clf, self._head_classes, video, boxes, start_s,
+                self._trained_clf,
+                self._head_classes,
+                video,
+                boxes,
+                start_s,
             )
             predicted = True
         else:
@@ -1654,7 +1744,12 @@ class ExploreApp:
             ui.notify("No frames sampled.", color="warning")
             return
 
-        self._current_window = {"video": video, "start_s": start_s, "frames": frames, "predicted": predicted}
+        self._current_window = {
+            "video": video,
+            "start_s": start_s,
+            "frames": frames,
+            "predicted": predicted,
+        }
         source = "model predictions" if predicted else "proximity labels"
         if self._sample_status:
             self._sample_status.text = f"{len(frames)} frames ({source}) — correct if needed, then Train + Preview."
@@ -1726,15 +1821,15 @@ class ExploreApp:
                 self._pipeline.set_head_class_names(all_classes)
 
             if self._train_status:
-                self._train_status.text = (
-                    f"✓ {len(all_samples)} frames · {len(all_classes)} classes · predicting next window…"
-                )
+                self._train_status.text = f"✓ {len(all_samples)} frames · {len(all_classes)} classes · predicting next window…"
 
             # Pick a new random window (from any video) and predict with the model
             video = self._label_window_video or self.video_paths[0]
             start_s = self._random_preview_start(
                 video,
-                exclude_start=self._current_window["start_s"] if self._current_window else -999.0,
+                exclude_start=self._current_window["start_s"]
+                if self._current_window
+                else -999.0,
             )
             boxes = self.video_boxes.get(video, {})
             new_frames = await run.io_bound(
@@ -1742,16 +1837,22 @@ class ExploreApp:
             )
 
             if new_frames:
-                self._current_window = {"video": video, "start_s": start_s, "frames": new_frames, "predicted": True}
+                self._current_window = {
+                    "video": video,
+                    "start_s": start_s,
+                    "frames": new_frames,
+                    "predicted": True,
+                }
                 if self._current_window_refresh:
                     self._current_window_refresh()
 
             if self._train_status:
-                self._train_status.text = (
-                    f"✓ Trained on {len(all_samples)} frames · {len(all_classes)} classes"
-                )
+                self._train_status.text = f"✓ Trained on {len(all_samples)} frames · {len(all_classes)} classes"
             self._save_session()
-            ui.notify("Trained — correct any wrong labels, then train again.", color="positive")
+            ui.notify(
+                "Trained — correct any wrong labels, then train again.",
+                color="positive",
+            )
 
         except Exception as exc:
             logger.exception("Training failed")
@@ -1853,8 +1954,7 @@ class ExploreApp:
 
     def _build_config(self) -> ExperimentConfig:
         objects = [
-            ObjectConfig(name=o["name"], bounding_box=o["box"])
-            for o in self.objects
+            ObjectConfig(name=o["name"], bounding_box=o["box"]) for o in self.objects
         ]
         behavior = BehaviorConfig(
             exploration_prompts=self.exploration_prompts,
@@ -1895,9 +1995,7 @@ class ExploreApp:
             return
 
         cfg = self._build_config()
-        csv_path = (
-            cfg.project_dir / "results" / f"{cfg.project_name}.csv"
-        )
+        csv_path = cfg.project_dir / "results" / f"{cfg.project_name}.csv"
 
         with container:
             with ui.row().classes("items-center gap-3 mb-2"):

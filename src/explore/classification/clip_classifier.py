@@ -167,11 +167,11 @@ class CLIPClassifier:
             Shape ``(N,)`` — probability of exploration per frame.
         """
         self._ensure_loaded()
-        pos_emb = self.embed_texts(pos_prompts)   # (P, D)
-        neg_emb = self.embed_texts(neg_prompts)   # (Q, D)
+        pos_emb = self.embed_texts(pos_prompts)  # (P, D)
+        neg_emb = self.embed_texts(neg_prompts)  # (Q, D)
 
-        pos_scores = (embeddings @ pos_emb.T).mean(axis=1)   # (N,)
-        neg_scores = (embeddings @ neg_emb.T).mean(axis=1)   # (N,)
+        pos_scores = (embeddings @ pos_emb.T).mean(axis=1)  # (N,)
+        neg_scores = (embeddings @ neg_emb.T).mean(axis=1)  # (N,)
 
         # Scale by CLIP's learned temperature so the softmax is decisive.
         # Without this, cosine similarities (~0.2–0.4) differ by only ~0.01
@@ -184,10 +184,10 @@ class CLIPClassifier:
         pos_scores = pos_scores * logit_scale
         neg_scores = neg_scores * logit_scale
 
-        stack = np.stack([pos_scores, neg_scores], axis=1)   # (N, 2)
-        stack -= stack.max(axis=1, keepdims=True)             # numerical stability
+        stack = np.stack([pos_scores, neg_scores], axis=1)  # (N, 2)
+        stack -= stack.max(axis=1, keepdims=True)  # numerical stability
         exp_stack = np.exp(stack)
-        proba = exp_stack[:, 0] / exp_stack.sum(axis=1)      # (N,)
+        proba = exp_stack[:, 0] / exp_stack.sum(axis=1)  # (N,)
         return proba
 
     def fit(
@@ -211,9 +211,7 @@ class CLIPClassifier:
         from sklearn.linear_model import LogisticRegression
 
         if len(np.unique(labels)) < 2:
-            raise ValueError(
-                "Need at least 2 distinct classes."
-            )
+            raise ValueError("Need at least 2 distinct classes.")
 
         self._head = LogisticRegression(
             C=c,
@@ -224,9 +222,7 @@ class CLIPClassifier:
         )
         self._head.fit(embeddings, labels)
         n_classes = len(np.unique(labels))
-        logger.info(
-            "Head fitted on %d frames, %d classes.", len(labels), n_classes
-        )
+        logger.info("Head fitted on %d frames, %d classes.", len(labels), n_classes)
 
     def predict_proba(self, embeddings: np.ndarray) -> np.ndarray:
         """Predict exploration probability using the fitted linear head.
@@ -247,9 +243,7 @@ class CLIPClassifier:
     def predict_class_indices(self, embeddings: np.ndarray) -> np.ndarray:
         """Return integer class predictions from the fitted head."""
         if self._head is None:
-            raise RuntimeError(
-                "No head fitted yet. Call fit() first."
-            )
+            raise RuntimeError("No head fitted yet. Call fit() first.")
         return self._head.predict(embeddings)
 
     def predict(self, embeddings: np.ndarray, threshold: float = 0.5) -> np.ndarray:

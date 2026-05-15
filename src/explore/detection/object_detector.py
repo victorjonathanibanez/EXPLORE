@@ -29,7 +29,6 @@ from PIL import Image
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class DetectionResult:
     """A single detected object.
@@ -161,7 +160,9 @@ class ObjectDetector:
 
             if len(scores) == 0:
                 logger.warning(
-                    "No detection found for '%s' (threshold=%.2f).", desc, self.box_threshold
+                    "No detection found for '%s' (threshold=%.2f).",
+                    desc,
+                    self.box_threshold,
                 )
                 continue
 
@@ -172,21 +173,28 @@ class ObjectDetector:
             for idx in scores.argsort(descending=True).tolist():
                 label = labels[idx] if idx < len(labels) else ""
                 if any(w in label.lower() for w in self._ANIMAL_LABEL_WORDS):
-                    logger.debug("  '%s' — skipping animal-labelled box '%s'", desc, label)
+                    logger.debug(
+                        "  '%s' — skipping animal-labelled box '%s'", desc, label
+                    )
                     continue
                 x1, y1, x2, y2 = boxes[idx].tolist()
                 chosen_box = (
-                    max(0, int(x1)), max(0, int(y1)),
-                    min(w, int(x2)), min(h, int(y2)),
+                    max(0, int(x1)),
+                    max(0, int(y1)),
+                    min(w, int(x2)),
+                    min(h, int(y2)),
                 )
                 chosen_score = float(scores[idx])
                 break
 
             if chosen_box is not None:
-                results.append(DetectionResult(label=desc, box=chosen_box, score=chosen_score))
+                results.append(
+                    DetectionResult(label=desc, box=chosen_box, score=chosen_score)
+                )
             else:
                 logger.warning(
-                    "  '%s' — only animal-labelled detections found in this frame.", desc
+                    "  '%s' — only animal-labelled detections found in this frame.",
+                    desc,
                 )
 
         return results
@@ -270,7 +278,9 @@ class ObjectDetector:
                     best[result.label] = (result.score, result, frame.copy())
                     logger.debug(
                         "  '%s' — new best %.2f at frame %d",
-                        result.label, result.score, idx,
+                        result.label,
+                        result.score,
+                        idx,
                     )
 
         cap.release()
@@ -318,11 +328,11 @@ class ObjectDetector:
         """
         # Colours chosen to be distinct on typical grey/brown arena floors
         palette = [
-            (0, 220, 220),   # cyan
-            (220, 0, 220),   # magenta
-            (40, 200, 40),   # green
-            (220, 160, 0),   # amber
-            (80, 80, 240),   # blue
+            (0, 220, 220),  # cyan
+            (220, 0, 220),  # magenta
+            (40, 200, 40),  # green
+            (220, 160, 0),  # amber
+            (80, 80, 240),  # blue
         ]
         out = frame.copy()
         for i, (det, name) in enumerate(zip(detections, names, strict=False)):
@@ -343,9 +353,19 @@ class ObjectDetector:
             label_y = max(y1 - 8, 18)
             # Dark background behind text for readability
             (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            cv2.rectangle(out, (x1, label_y - th - 4), (x1 + tw + 4, label_y + 2), (0, 0, 0), -1)
-            cv2.putText(out, label, (x1 + 2, label_y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
+            cv2.rectangle(
+                out, (x1, label_y - th - 4), (x1 + tw + 4, label_y + 2), (0, 0, 0), -1
+            )
+            cv2.putText(
+                out,
+                label,
+                (x1 + 2, label_y),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                1,
+                cv2.LINE_AA,
+            )
 
         return out
 
