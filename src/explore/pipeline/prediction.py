@@ -376,9 +376,7 @@ class ExplorationPipeline:
 
         objects = self.config.objects
         original: dict[str, tuple[int, int, int, int]] = {
-            o.name: o.bounding_box
-            for o in objects
-            if o.bounding_box is not None
+            o.name: o.bounding_box for o in objects if o.bounding_box is not None
         }
 
         # 2. Reference video or no reference frame → use drawn boxes as-is
