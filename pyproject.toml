@@ -118,9 +118,13 @@ module = [
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-# transformers is not installed in the CI lint step, so AutoProcessor is Any
-# there and the no-untyped-call ignore below is flagged as unused.
-module = ["explore.detection.object_detector"]
+# transformers is not installed in the CI lint step (too large), so
+# AutoProcessor is Any there and no-untyped-call ignores are stale.
+# pandas reset_index() return type differs between mypy stub versions.
+module = [
+    "explore.detection.object_detector",
+    "explore.pipeline.analysis",
+]
 warn_unused_ignores = false
 
 # ---------------------------------------------------------------------------
