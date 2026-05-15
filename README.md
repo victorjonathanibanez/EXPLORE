@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/explore/assets/explore_logo_writing.png" alt="EXPLORE" height="120">
+  <img src="src/explore/assets/explore_logo_writing.png" alt="EXPLORE" height="180">
 </p>
 
 **Automated exploration behavior analysis for object recognition and location tests**  
