@@ -6,8 +6,8 @@
 *CLIP-based classification with an iterative labeling loop — no GPU required.*
 
 [![CI](https://github.com/victorjonathanibanez/EXPLORE/actions/workflows/ci.yml/badge.svg)](https://github.com/victorjonathanibanez/EXPLORE/actions)
-[![PyPI](https://img.shields.io/pypi/v/explore-behavior)](https://pypi.org/project/explore-behavior/)
-[![Python](https://img.shields.io/pypi/pyversions/explore-behavior)](https://pypi.org/project/explore-behavior/)
+[![PyPI](https://img.shields.io/pypi/v/explore-behavior?cache_seconds=60)](https://pypi.org/project/explore-behavior/)
+[![Python](https://img.shields.io/pypi/pyversions/explore-behavior?cache_seconds=60)](https://pypi.org/project/explore-behavior/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
