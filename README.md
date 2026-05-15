@@ -6,8 +6,8 @@
 *CLIP-based classification with an iterative labeling loop — no GPU required.*
 
 [![CI](https://github.com/victorjonathanibanez/EXPLORE/actions/workflows/ci.yml/badge.svg)](https://github.com/victorjonathanibanez/EXPLORE/actions)
-[![PyPI](https://img.shields.io/pypi/v/explore)](https://pypi.org/project/explore/)
-[![Python](https://img.shields.io/pypi/pyversions/explore)](https://pypi.org/project/explore/)
+[![PyPI](https://img.shields.io/pypi/v/explore-behavior)](https://pypi.org/project/explore-behavior/)
+[![Python](https://img.shields.io/pypi/pyversions/explore-behavior)](https://pypi.org/project/explore-behavior/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -35,13 +35,13 @@ head that you train interactively in a few minutes.
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # 2. Install EXPLORE
-pip install explore
+pip install explore-behavior
 ```
 
 For GPU (CUDA 12):
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-pip install explore
+pip install explore-behavior
 ```
 
 ---
