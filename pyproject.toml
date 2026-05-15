@@ -117,6 +117,12 @@ module = [
 ]
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+# transformers is not installed in the CI lint step, so AutoProcessor is Any
+# there and the no-untyped-call ignore below is flagged as unused.
+module = ["explore.detection.object_detector"]
+warn_unused_ignores = false
+
 # ---------------------------------------------------------------------------
 # Pytest
 # ---------------------------------------------------------------------------

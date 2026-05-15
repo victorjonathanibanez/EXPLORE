@@ -26,7 +26,7 @@ jobs:
           cache: pip
 
       - name: Install linting dependencies
-        run: pip install ruff mypy types-PyYAML types-tqdm
+        run: pip install ruff mypy types-PyYAML types-tqdm numpy pandas opencv-stubs
 
       - name: Ruff — lint
         run: ruff check src/ tests/
