@@ -15,6 +15,8 @@ into a single tidy ``pd.DataFrame`` for downstream statistics in R/Python.
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 
@@ -96,7 +98,7 @@ class BehaviorAnalyzer:
         for b in range(n_bins):
             start = b * bin_frames
             end = min(start + bin_frames, n_frames)
-            row: dict = {
+            row: dict[str, Any] = {
                 "experiment": experiment_id,
                 "animal": animal_id,
                 "minute": (b + 1) * (self.bin_duration_seconds / 60),
@@ -163,7 +165,7 @@ class BehaviorAnalyzer:
 
         agg = df.groupby("animal")[numeric_cols].agg(["mean", "sem"]).round(4)
         agg.columns = ["_".join(c) for c in agg.columns]
-        return agg.reset_index()
+        return agg.reset_index()  # type: ignore[no-any-return]
 
     # ------------------------------------------------------------------
     # Static helpers
@@ -188,7 +190,7 @@ class BehaviorAnalyzer:
     def _filter_bouts(self, arr: np.ndarray) -> np.ndarray:
         """Zero-out exploration runs shorter than min_bout_frames."""
         if self.min_bout_frames <= 1:
-            return arr.copy()
+            return arr.copy()  # type: ignore[no-any-return]
         out = arr.copy()
         in_bout = False
         start = 0
@@ -201,7 +203,7 @@ class BehaviorAnalyzer:
                 in_bout = False
                 if (i - start) < self.min_bout_frames:
                     out[start:i] = 0
-        return out
+        return out  # type: ignore[no-any-return]
 
     def _count_bouts(self, arr: np.ndarray) -> int:
         """Count rising edges (0→1 transitions) in a binary array."""

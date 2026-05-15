@@ -87,7 +87,7 @@ class BoxLocalizer:
         self.min_matches = min_matches
         self.search_margin = search_margin
         self.ratio_thresh = ratio_thresh
-        self._orb = cv2.ORB_create(n_features)
+        self._orb = cv2.ORB_create(n_features)  # type: ignore[attr-defined]
         self._matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
 
     # ------------------------------------------------------------------
@@ -272,4 +272,4 @@ class BoxLocalizer:
                 1,
                 cv2.LINE_AA,
             )
-        return out
+        return out  # type: ignore[no-any-return]

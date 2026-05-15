@@ -38,6 +38,7 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -189,7 +190,7 @@ class ExperimentConfig:
     # Serialisation
     # ------------------------------------------------------------------
 
-    def to_dict(self) -> dict:  # type: ignore[return]
+    def to_dict(self) -> dict[str, Any]:
         def _bbox(bb: tuple[int, int, int, int] | None) -> list[int] | None:
             return list(bb) if bb is not None else None
 
@@ -227,7 +228,7 @@ class ExperimentConfig:
         return out
 
     @classmethod
-    def from_dict(cls, data: dict) -> ExperimentConfig:  # type: ignore[return]
+    def from_dict(cls, data: dict[str, Any]) -> ExperimentConfig:
         """Construct from a plain dict (e.g. loaded from YAML).
 
         Tolerates old-format YAMLs that carry a ``description`` field or a
@@ -242,7 +243,7 @@ class ExperimentConfig:
             objects.append(
                 ObjectConfig(
                     name=o["name"],
-                    bounding_box=tuple(bb) if bb else None,  # type: ignore[arg-type]
+                    bounding_box=tuple(bb) if bb else None,
                 )
             )
 

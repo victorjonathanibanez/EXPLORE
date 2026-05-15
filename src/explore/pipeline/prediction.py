@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -45,7 +46,7 @@ _PRED_HI_SCALE = 1.0  # high-res: full resolution
 def _filter_bouts(arr: np.ndarray, min_frames: int) -> np.ndarray:
     """Zero out exploration runs shorter than *min_frames*."""
     if min_frames <= 1:
-        return arr.copy()
+        return arr.copy()  # type: ignore[no-any-return]
     out = arr.copy()
     in_bout = False
     start = 0
@@ -58,7 +59,7 @@ def _filter_bouts(arr: np.ndarray, min_frames: int) -> np.ndarray:
             in_bout = False
             if (i - start) < min_frames:
                 out[start:i] = 0
-    return out
+    return out  # type: ignore[no-any-return]
 
 
 class ExplorationPipeline:
@@ -231,7 +232,7 @@ class ExplorationPipeline:
                 continue
 
             background = self._estimate_background(video_path)
-            precomputed: dict | None = None
+            precomputed: dict[str, Any] | None = None
 
             if (
                 self._head_class_names is not None
@@ -377,7 +378,7 @@ class ExplorationPipeline:
         original: dict[str, tuple[int, int, int, int]] = {
             o.name: o.bounding_box
             for o in objects
-            if o.bounding_box is not None  # type: ignore[misc]
+            if o.bounding_box is not None
         }
 
         # 2. Reference video or no reference frame → use drawn boxes as-is
@@ -560,10 +561,10 @@ class ExplorationPipeline:
                 out_h = max(1, int(h * scale))
                 repeat = max(1, round(out_fps / _ANALYSIS_FPS))
                 # avc1 (H.264) avoids the green-frame bug on macOS with mp4v
-                fourcc = cv2.VideoWriter_fourcc(*"avc1")
+                fourcc = cv2.VideoWriter_fourcc(*"avc1")  # type: ignore[attr-defined]
                 writer = cv2.VideoWriter(str(out_path), fourcc, out_fps, (out_w, out_h))
                 if not writer.isOpened():
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # type: ignore[attr-defined]
                     writer = cv2.VideoWriter(
                         str(out_path), fourcc, out_fps, (out_w, out_h)
                     )
@@ -681,7 +682,7 @@ class ExplorationPipeline:
         skip, max_frame, step, _ = self._frame_range(video_path)
         reader = VideoReader(video_path)
 
-        records: list[dict] = []
+        records: list[dict[str, Any]] = []
 
         for frame_idx, (_, frame) in enumerate(
             reader.iter_frames(start=skip, end=max_frame, step=step)

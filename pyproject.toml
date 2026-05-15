@@ -105,6 +105,18 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# GUI and CLI files use tkinter/NiceGUI kwargs patterns and third-party
+# stubs that don't support strict type-checking cleanly.
+module = [
+    "explore.cli",
+    "explore.gui.nicegui_app",
+    "explore.gui.behavior_setup",
+    "explore.gui.object_setup",
+    "explore.gui.review",
+]
+ignore_errors = true
+
 # ---------------------------------------------------------------------------
 # Pytest
 # ---------------------------------------------------------------------------

@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 import joblib
 import numpy as np
@@ -72,10 +73,10 @@ class CLIPClassifier:
         self.batch_size = batch_size
         self.device = device or self._auto_device()
 
-        self._model = None
-        self._preprocess = None
-        self._tokenizer = None
-        self._head = None  # sklearn LogisticRegression, fitted after corrections
+        self._model: Any = None
+        self._preprocess: Any = None
+        self._tokenizer: Any = None
+        self._head: Any = None  # sklearn LogisticRegression, fitted after corrections
 
     # ------------------------------------------------------------------
     # Embedding
@@ -110,11 +111,11 @@ class CLIPClassifier:
 
         for batch in tqdm(batches, desc="Encoding frames", disable=not show_progress):
             tensors = torch.stack(
-                [self._preprocess(Image.fromarray(f[:, :, ::-1])) for f in batch]  # type: ignore[misc]
+                [self._preprocess(Image.fromarray(f[:, :, ::-1])) for f in batch]
             ).to(self.device)
 
             with torch.no_grad():
-                emb = self._model.encode_image(tensors)  # type: ignore[misc]
+                emb = self._model.encode_image(tensors)
                 emb = emb / emb.norm(dim=-1, keepdim=True)
 
             embeddings.append(emb.cpu().float().numpy())
@@ -130,11 +131,11 @@ class CLIPClassifier:
             Shape ``(len(texts), embed_dim)``, L2-normalised.
         """
         self._ensure_loaded()
-        tokens = self._tokenizer(texts).to(self.device)  # type: ignore[misc]
+        tokens = self._tokenizer(texts).to(self.device)
         with torch.no_grad():
-            emb = self._model.encode_text(tokens)  # type: ignore[misc]
+            emb = self._model.encode_text(tokens)
             emb = emb / emb.norm(dim=-1, keepdim=True)
-        return emb.cpu().float().numpy()
+        return emb.cpu().float().numpy()  # type: ignore[no-any-return]
 
     # ------------------------------------------------------------------
     # Prediction
@@ -177,7 +178,7 @@ class CLIPClassifier:
         # Without this, cosine similarities (~0.2–0.4) differ by only ~0.01
         # between classes, making the softmax output ≈ 0.5 for every frame.
         logit_scale = (
-            float(self._model.logit_scale.exp().item())  # type: ignore[union-attr]
+            float(self._model.logit_scale.exp().item())
             if hasattr(self._model, "logit_scale")
             else 100.0
         )
@@ -188,7 +189,7 @@ class CLIPClassifier:
         stack -= stack.max(axis=1, keepdims=True)  # numerical stability
         exp_stack = np.exp(stack)
         proba = exp_stack[:, 0] / exp_stack.sum(axis=1)  # (N,)
-        return proba
+        return proba  # type: ignore[no-any-return]
 
     def fit(
         self,
@@ -238,13 +239,13 @@ class CLIPClassifier:
                 "Call fit() after collecting correction labels, "
                 "or use zero_shot_predict() for label-free prediction."
             )
-        return self._head.predict_proba(embeddings)[:, 1]
+        return self._head.predict_proba(embeddings)[:, 1]  # type: ignore[no-any-return]
 
     def predict_class_indices(self, embeddings: np.ndarray) -> np.ndarray:
         """Return integer class predictions from the fitted head."""
         if self._head is None:
             raise RuntimeError("No head fitted yet. Call fit() first.")
-        return self._head.predict(embeddings)
+        return self._head.predict(embeddings)  # type: ignore[no-any-return]
 
     def predict(self, embeddings: np.ndarray, threshold: float = 0.5) -> np.ndarray:
         """Binary exploration prediction.

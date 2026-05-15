@@ -20,6 +20,7 @@ import logging
 import random
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -93,8 +94,8 @@ class ObjectDetector:
         self.box_threshold = box_threshold
         self.text_threshold = text_threshold
         self.device = device or self._auto_device()
-        self._model = None
-        self._processor = None
+        self._model: Any = None
+        self._processor: Any = None
 
     # ------------------------------------------------------------------
     # Public API
@@ -137,16 +138,16 @@ class ObjectDetector:
         for desc in descriptions:
             # Append animal terms so DINO labels animal detections explicitly.
             caption = f"{desc.strip().rstrip('.')} . {self._ANIMAL_TERMS} ."
-            inputs = self._processor(  # type: ignore[misc]
+            inputs = self._processor(
                 images=pil_image,
                 text=caption,
                 return_tensors="pt",
             ).to(self.device)
 
             with torch.no_grad():
-                outputs = self._model(**inputs)  # type: ignore[misc]
+                outputs = self._model(**inputs)
 
-            raw = self._processor.post_process_grounded_object_detection(  # type: ignore[misc]
+            raw = self._processor.post_process_grounded_object_detection(
                 outputs,
                 inputs.input_ids,
                 threshold=self.box_threshold,
@@ -367,7 +368,7 @@ class ObjectDetector:
                 cv2.LINE_AA,
             )
 
-        return out
+        return out  # type: ignore[no-any-return]
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -388,7 +389,7 @@ class ObjectDetector:
             ) from exc
 
         logger.info("Loading Grounding DINO model '%s' …", self.model_id)
-        self._processor = AutoProcessor.from_pretrained(self.model_id)
+        self._processor = AutoProcessor.from_pretrained(self.model_id)  # type: ignore[no-untyped-call]
         self._model = AutoModelForZeroShotObjectDetection.from_pretrained(
             self.model_id
         ).to(self.device)
